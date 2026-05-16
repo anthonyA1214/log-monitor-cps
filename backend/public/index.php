@@ -1,20 +1,22 @@
 <?php
 
-use Illuminate\Foundation\Application;
-use Illuminate\Http\Request;
+use LogMonitor\Backend\Middleware\CorsMiddleware;
+use Slim\Factory\AppFactory;
 
-define('LARAVEL_START', microtime(true));
+require __DIR__ . '/../vendor/autoload.php';
 
-// Determine if the application is in maintenance mode...
-if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
-    require $maintenance;
-}
+$app = AppFactory::create();
 
-// Register the Composer autoloader...
-require __DIR__.'/../vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
 
-// Bootstrap Laravel and handle the request...
-/** @var Application $app */
-$app = require_once __DIR__.'/../bootstrap/app.php';
+$app->addBodyParsingMiddleware();
+$app->addRoutingMiddleware();
+$app->addErrorMiddleware(true, true, true);
 
-$app->handleRequest(Request::capture());
+$app->add(new CorsMiddleware($app->getResponseFactory()));
+
+
+require __DIR__ . '/../src/Routes/api.php';
+
+$app->run();
