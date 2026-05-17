@@ -1,8 +1,8 @@
 <?php
 
-/** @var \Slim\App $app */
+use LogMonitor\Backend\Controllers\LogController;
+use Slim\App;
 
-$app->get('/hello', function ($request, $response, $args) {
-    $response->getBody()->write("Hello from API!");
-    return $response;
-});
+return function (App $app) {
+    $app->get('/api/logs', [LogController::class, 'getLogs']);
+};
