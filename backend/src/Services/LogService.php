@@ -18,9 +18,8 @@ class LogService
 
         foreach ($files as $file) {
             $logs[] = [
-                'name' => basename($file),
-                'date_modified' => date("F d Y - H:i:s.", filemtime($file)),
-                'path' => $file,
+                'file_name' => basename($file),
+                'date_modified' => date('c', filemtime($file)),
             ];
         }
 
