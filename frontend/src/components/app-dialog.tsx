@@ -14,7 +14,7 @@ interface Props {
 export default function AppDialog({ fileName, content }: Props) {
   return (
     <Dialog>
-      <DialogTrigger className="text-blue-500 hover:text-blue-700">{fileName}</DialogTrigger>
+      <DialogTrigger className="text-blue-500 hover:text-blue-700 hover:underline">{fileName}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{fileName}</DialogTitle>
