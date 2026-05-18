@@ -3,23 +3,42 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
+import { logsQueries } from "@/lib/api/logs"
+import { useLogsStore } from "@/store/logs-store"
+import { useQuery } from "@tanstack/react-query"
+import { useEffect, useState } from "react"
 
-interface Props {
-  fileName: string
-  content: string
-}
+export default function AppDialog() {
+  const { fileName, setFileName } = useLogsStore()
+  const { data, isPending } = useQuery({
+    ...logsQueries.detail(fileName ?? ""),
+    enabled: !!fileName, // Disable automatic fetching
+  })
 
-export default function AppDialog({ fileName, content }: Props) {
+  const [cached, setCached] = useState<{
+    fileName: string
+    content: string
+  } | null>(null)
+
+  useEffect(() => {
+    if (fileName && data?.content) {
+      setCached({ fileName, content: data.content })
+    } else if (fileName) {
+      setCached(null)
+    }
+  }, [fileName, data?.content])
+
   return (
-    <Dialog>
-      <DialogTrigger className="text-blue-500 hover:text-blue-700 hover:underline">{fileName}</DialogTrigger>
+    <Dialog
+      open={!!fileName}
+      onOpenChange={(open) => !open && setFileName(null)}
+    >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{fileName}</DialogTitle>
+          <DialogTitle>{cached?.fileName}</DialogTitle>
         </DialogHeader>
-        <p>{content}</p>
+        <p>{fileName && isPending ? "Loading..." : cached?.content ?? "No content available."}</p>
       </DialogContent>
     </Dialog>
   )

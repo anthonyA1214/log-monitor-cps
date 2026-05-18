@@ -25,4 +25,16 @@ class LogService
 
         return $logs;
     }
+
+    public function getLogDetailByFileName(string $fileName)
+    {
+        $filePath = $this->logFolder . '/' . $fileName;
+
+        if (!file_exists($filePath)) {
+            return null;
+        }
+
+        $content = file_get_contents($filePath);
+        return ['content' => $content];
+    }
 }

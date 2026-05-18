@@ -2,8 +2,8 @@
 
 import { type ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
-import AppDialog from "./app-dialog"
 import type { Log } from "@/types/logs"
+import { useLogsStore } from "@/store/logs-store"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -13,10 +13,16 @@ export const columns: ColumnDef<Log>[] = [
     accessorKey: "fileName",
     header: "File Name",
     cell: ({ row }) => {
+      const { setFileName } = useLogsStore()
       const fileName = row.original.fileName
 
       return (
-        <AppDialog fileName={fileName} content={`Content of ${fileName}`} />
+        <button
+          className="text-blue-500 hover:text-blue-700 hover:underline"
+          onClick={() => setFileName(fileName)}
+        >
+          {fileName}
+        </button>
       )
     },
   },
