@@ -1,7 +1,7 @@
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
-import { format } from "date-fns"
+import { format, formatDistanceToNow } from "date-fns"
 import type { Log } from "@/types/logs"
 import { useLogsStore } from "@/store/logs-store"
 import { getTimeStatus } from "@/lib/time-status"
@@ -41,18 +41,27 @@ export const columns: ColumnDef<Log>[] = [
     accessorKey: "timeStatus",
     header: "Time Status",
     cell: ({ row }) => {
-      const status = getTimeStatus(new Date(row.getValue("dateModified")))
+      const date = new Date(row.getValue("dateModified"))
+      const status = getTimeStatus(date)
+      const ago = formatDistanceToNow(date, { addSuffix: true })
 
-    return (
-      <span className={cn(
-        "rounded-md px-2 py-1 text-xs font-medium",
-        status === "green" && "bg-green-100 text-green-700",
-        status === "yellow" && "bg-yellow-100 text-yellow-700",
-        status === "red" && "bg-red-100 text-red-700",
-      )}>
-        {status === "green" ? "Recent" : status === "yellow" ? "Aging" : "Old"}
-      </span>
-    )
+      return (
+        <span
+          className={cn(
+            "rounded-md px-2 py-1 text-xs font-medium",
+            status === "green" && "bg-green-100 text-green-700",
+            status === "yellow" && "bg-yellow-100 text-yellow-700",
+            status === "red" && "bg-red-100 text-red-700"
+          )}
+        >
+          {status === "green"
+            ? "Recent"
+            : status === "yellow"
+              ? "Aging"
+              : "Old"}{" "}
+          — {ago}
+        </span>
+      )
     },
   },
 ]

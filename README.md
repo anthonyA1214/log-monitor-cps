@@ -1,74 +1,80 @@
 # Log Monitor
 
-This project contains two main applications: a Laravel backend and a React frontend.
+Log Monitor is a full-stack app for browsing and reading `.txt` log files from a configured server folder.
+
+## Stack
+
+- **Backend:** Slim 4 (PHP)
+- **Frontend:** React + TypeScript + Vite
+
+## Project Structure
+
+```text
+.
+├── backend/   # Slim API
+└── frontend/  # React app
+```
 
 ## Prerequisites
 
-- [PHP](https://www.php.net/) (>= 8.2)
+- [PHP](https://www.php.net/) 8.2+
 - [Composer](https://getcomposer.org/)
-- [Node.js](https://nodejs.org/) (>= 18)
-- [npm](https://www.npmjs.com/) (or yarn/pnpm)
+- [Node.js](https://nodejs.org/) 18+
+- npm
 
----
+## Backend Setup (`backend/`)
 
-## Backend (Laravel)
-
-The backend is a Laravel application providing an API.
-
-### Setup & Run
-
-1. **Navigate to the backend folder:**
+1. Install dependencies:
    ```bash
    cd backend
-   ```
-2. **Install dependencies:**
-   ```bash
    composer install
    ```
-3. **Environment Setup:**
+2. Create environment file:
    ```bash
    cp .env.example .env
    ```
-   *(Be sure to adjust your database credentials and other settings in the `.env` file)*
-4. **Generate App Key:**
+3. Configure `.env`:
+   - `LOG_FOLDER`: absolute path to the folder containing `.txt` log files
+   - `FRONTEND_URL`: frontend origin for CORS (example: `http://localhost:5173`)
+4. Start the API server:
    ```bash
-   php artisan key:generate
+   composer start
    ```
-5. **Run Migrations:**
-   ```bash
-   php artisan migrate
-   ```
-6. **Start the local server:**
-   ```bash
-   php artisan serve
-   ```
-   By default, this will run on [http://localhost:8000](http://localhost:8000).
 
----
+Backend runs on `http://localhost:8080` by default.
 
-## Frontend (React + Vite)
+### Backend API
 
-The frontend is built with React, Vite, Tailwind CSS, and Shadcn UI components.
+- `GET /api/logs` - list available log files
+- `GET /api/logs/{fileName}` - get content for a specific file
 
-### Setup & Run
+## Frontend Setup (`frontend/`)
 
-1. **Navigate to the frontend folder:**
+1. Install dependencies:
    ```bash
    cd frontend
-   ```
-2. **Install dependencies:**
-   ```bash
    npm install
    ```
-3. **Start the development server:**
+2. Create environment file:
+   ```bash
+   cp .env.example .env
+   ```
+3. Confirm API URL in `.env`:
+   ```env
+   VITE_API_URL=http://localhost:8080
+   ```
+4. Start the app:
    ```bash
    npm run dev
    ```
-   By default, this will run on [http://localhost:5173](http://localhost:5173).
 
-### Available Scripts
+Frontend runs on `http://localhost:5173` by default.
 
-- `npm run dev` - Starts the Vite dev server
-- `npm run build` - Typechecks and builds the app for production
-- `npm run lint` - Runs ESLint
-- `npm run format` - Formats code with Prettier
+## Frontend Scripts
+
+- `npm run dev` - start Vite dev server
+- `npm run build` - type-check and build for production
+- `npm run lint` - run ESLint
+- `npm run format` - format TypeScript/TSX files with Prettier
+- `npm run typecheck` - run TypeScript checks without emitting output
+- `npm run preview` - preview production build locally
