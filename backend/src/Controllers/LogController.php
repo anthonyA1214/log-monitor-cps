@@ -21,4 +21,18 @@ class LogController
         $response->getBody()->write(json_encode($logs));
         return $response;
     }
+
+    public function getLogDetailByFileName(Request $request, Response $response, array $args): Response
+    {
+        $fileName = $args['fileName'];
+        $logDetail = $this->logService->getLogDetailByFileName($fileName);
+
+        if ($logDetail === null) {
+            $response->getBody()->write(json_encode(['error' => 'Log file not found']));
+            return $response->withStatus(404);
+        }
+
+        $response->getBody()->write(json_encode($logDetail));
+        return $response;
+    }
 }

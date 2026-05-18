@@ -5,4 +5,5 @@ use Slim\App;
 
 return function (App $app) {
     $app->get('/api/logs', [LogController::class, 'getLogs']);
+    $app->get('/api/logs/{fileName}', [LogController::class, 'getLogDetailByFileName']);
 };

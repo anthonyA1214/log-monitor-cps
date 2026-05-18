@@ -1,3 +1,4 @@
+import AppDialog from "@/components/app-dialog"
 import { columns } from "@/components/columns"
 import { DataTable } from "@/components/data-table"
 import { logsQueries } from "@/lib/api/logs"
@@ -12,6 +13,7 @@ function Index() {
   const { data, isPending } = useQuery({
     ...logsQueries.all(),
     initialData: [],
+    refetchInterval: 5000, // Refetch every 5 seconds
   })
 
   if (isPending) return <p>Loading...</p>
@@ -27,6 +29,8 @@ function Index() {
         {/* table */}
         <DataTable columns={columns} data={data} />
       </div>
+
+      <AppDialog />
     </div>
   )
 }
