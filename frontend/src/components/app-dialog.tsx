@@ -16,32 +16,28 @@ export default function AppDialog() {
     enabled: !!fileName, // Disable automatic fetching
   })
 
-  const [cached, setCached] = useState<{
-    fileName: string
-    content: string
-  } | null>(null)
+  const [open, setOpen] = useState(!!fileName)
 
   useEffect(() => {
-    if (fileName && data?.content) {
-      setCached({ fileName, content: data.content })
-    } else if (fileName) {
-      setCached(null)
-    }
-  }, [fileName, data?.content])
+    if (fileName) setOpen(true)
+  }, [fileName])
 
   return (
     <Dialog
-      open={!!fileName}
-      onOpenChange={(open) => !open && setFileName(null)}
+      open={open}
+      onOpenChange={() => {
+        setOpen(false)
+        setTimeout(() => setFileName(null), 200)
+      }}
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{cached?.fileName}</DialogTitle>
+          <DialogTitle>{fileName}</DialogTitle>
         </DialogHeader>
         <p>
-          {fileName && isPending
+          {isPending
             ? "Loading..."
-            : (cached?.content ?? "No content available.")}
+            : (data?.content ?? "No content available.")}
         </p>
       </DialogContent>
     </Dialog>
