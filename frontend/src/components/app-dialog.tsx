@@ -38,7 +38,11 @@ export default function AppDialog() {
         <DialogHeader>
           <DialogTitle>{cached?.fileName}</DialogTitle>
         </DialogHeader>
-        <p>{fileName && isPending ? "Loading..." : cached?.content ?? "No content available."}</p>
+        <p>
+          {fileName && isPending
+            ? "Loading..."
+            : (cached?.content ?? "No content available.")}
+        </p>
       </DialogContent>
     </Dialog>
   )
