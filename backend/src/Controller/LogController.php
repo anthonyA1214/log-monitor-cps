@@ -14,6 +14,13 @@ class LogController
 {
     public function __construct(private LogService $logService) {}
 
+    public function index(Request $request, Response $response): Response
+    {
+        $logs = $this->logService->getLogFiles();
+        $response->getBody()->write(json_encode($logs));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
     public function store(Request $request, Response $response): Response
     {
         $body = json_decode($request->getbody()->getContents(), true);
@@ -41,7 +48,7 @@ class LogController
         }
 
         foreach ($body as $log) {
-            $this->logService->insertLog(
+            $this->logService->syncLog(
                 $log['file_name'],
                 $log['file_path'],
                 $log['file_modified_at'],
@@ -49,27 +56,21 @@ class LogController
         }
 
         $response->getBody()->write(json_encode(['success' => true]));
-        return $response->withHeader('Content-Type', 'application/json');
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
-    // public function getLogs(Request $request, Response $response): Response
-    // {
-    //     $logs = $this->logService->getLogFiles();
-    //     $response->getBody()->write(json_encode($logs));
-    //     return $response;
-    // }
 
-    // public function getLogDetailByFileName(Request $request, Response $response, array $args): Response
-    // {
-    //     $fileName = $args['fileName'];
-    //     $logDetail = $this->logService->getLogDetailByFileName($fileName);
+    public function show(Request $request, Response $response, array $args): Response
+    {
+        $logId = (int) $args['id'];
+        $log = $this->logService->getLogContent($logId);
 
-    //     if ($logDetail === null) {
-    //         $response->getBody()->write(json_encode(['error' => 'Log file not found']));
-    //         return $response->withStatus(404);
-    //     }
+        if ($log === null) {
+            $response->getBody()->write(json_encode(['error' => 'Log not found']));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
 
-    //     $response->getBody()->write(json_encode($logDetail));
-    //     return $response;
-    // }
+        $response->getBody()->write(json_encode($log));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
 }
