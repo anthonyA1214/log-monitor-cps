@@ -6,16 +6,31 @@ namespace LogMonitor\Backend\Service;
 
 class LogService
 {
-    private string $logFolder;
+    public function __construct(private \PDO $pdo) {}
 
-    public function __construct()
+    public function insertLog(string $fileName, string $filePath, string $fileModifiedAt): void
     {
-        $this->logFolder = $_SERVER['LOG_FOLDER'] ?? './logs';
+        $sql = "
+            INSERT INTO log_files (file_name, file_path, file_modified_at, status)
+            VALUES (:file_name, :file_path, :file_modified_at, 'active') 
+            ON DUPLICATE KEY UPDATE
+                file_name = VALUES(file_name),
+                file_modified_at = VALUES(file_modified_at),
+                status = 'active'
+        ";
+
+        $this->pdo->prepare($sql)->execute([
+            ':file_name' => $fileName,
+            ':file_path' => $filePath,
+            ':file_modified_at' => $fileModifiedAt,
+        ]);
     }
 
     public function getLogFiles(): array
     {
-        $files = glob($this->logFolder . '/*.txt');
+        $sql = "
+            SELECT file_name, file_modified_at
+        ";
         $logs = [];
 
         foreach ($files as $file) {
@@ -28,14 +43,14 @@ class LogService
         return $logs;
     }
 
-    public function getLogDetailByFileName(string $fileName): ?array
-    {
-        $filePath = $this->logFolder . '/' . $fileName;
+    // public function getLogDetailByFileName(string $fileName): ?array
+    // {
+    //     $filePath = $this->logFolder . '/' . $fileName;
 
-        if (!file_exists($filePath)) {
-            return null;
-        }
+    //     if (!file_exists($filePath)) {
+    //         return null;
+    //     }
 
-        return ['content' => file_get_contents($filePath)];
-    }
+    //     return ['content' => file_get_contents($filePath)];
+    // }
 }

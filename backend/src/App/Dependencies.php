@@ -5,8 +5,7 @@ declare(strict_types=1);
 use DI\Container;
 use Slim\App;
 
-return static function (App $app): void
-{
+return static function (App $app): void {
     /** @var Container $container */
     $container = $app->getContainer();
 
@@ -15,7 +14,7 @@ return static function (App $app): void
             'mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
             $_SERVER['DB_HOST'],
             $_SERVER['DB_PORT'],
-            $_SERVER['DB_NAME']
+            $_SERVER['DB_NAME'],
         );
 
         $pdo = new PDO($dsn, $_SERVER['DB_USER'], $_SERVER['DB_PASS']);

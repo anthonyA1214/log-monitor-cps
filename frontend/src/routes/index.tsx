@@ -1,4 +1,4 @@
-import AppDialog from "@/components/app-dialog"
+import AddLogDialog from "@/components/add-log-dialog"
 import { columns } from "@/components/columns"
 import { DataTable } from "@/components/data-table"
 import { useMilitaryTime } from "@/hooks/use-military-time"
@@ -33,16 +33,18 @@ function Index() {
           </div>
 
           {/* military time */}
-          <span className="font-mono text-sm text-muted-foreground">
-            {time}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-sm text-muted-foreground">
+              {time}
+            </span>
+
+            <AddLogDialog />
+          </div>
         </div>
 
         {/* table */}
         <DataTable columns={columns} data={data} />
       </div>
-
-      <AppDialog />
     </div>
   )
 }

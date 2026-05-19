@@ -11,6 +11,7 @@ use Slim\Routing\RouteCollectorProxy;
 return static function (App $app): void {
     $app->group('/api', function (RouteCollectorProxy $group) {
         $group->get('/logs', [LogController::class, 'getLogs']);
+        $group->post('/logs', [LogController::class, 'store']);
         $group->get('/logs/{fileName}', [LogController::class, 'getLogDetailByFileName']);
     });
 

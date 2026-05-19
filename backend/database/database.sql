@@ -1,9 +1,11 @@
-SET FOREIGN_KEY_CHECKS = 0;
+SET
+    FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
 -- Table structure for `log_files`
 -- ----------------------------
 DROP TABLE IF EXISTS `log_files`;
+
 CREATE TABLE IF NOT EXISTS `log_files` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `file_name` VARCHAR(255) NOT NULL,
@@ -14,4 +16,6 @@ CREATE TABLE IF NOT EXISTS `log_files` (
     UNIQUE KEY `log_files_file_path_unique` (`file_path`)
 );
 
-SET FOREIGN_KEY_CHECKS = 1;
+SET
+    FOREIGN_KEY_CHECKS = 1;
+
