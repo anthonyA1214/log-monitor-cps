@@ -1,6 +1,8 @@
 <?php
 
-namespace LogMonitor\Backend\Services;
+declare(strict_types=1);
+
+namespace LogMonitor\Backend\Service;
 
 class LogService
 {
@@ -8,7 +10,7 @@ class LogService
 
     public function __construct()
     {
-        $this->logFolder = $_ENV['LOG_FOLDER'] ?? './logs';
+        $this->logFolder = $_SERVER['LOG_FOLDER'] ?? './logs';
     }
 
     public function getLogFiles(): array
@@ -26,7 +28,7 @@ class LogService
         return $logs;
     }
 
-    public function getLogDetailByFileName(string $fileName)
+    public function getLogDetailByFileName(string $fileName): ?array
     {
         $filePath = $this->logFolder . '/' . $fileName;
 
@@ -34,7 +36,6 @@ class LogService
             return null;
         }
 
-        $content = file_get_contents($filePath);
-        return ['content' => $content];
+        return ['content' => file_get_contents($filePath)];
     }
 }

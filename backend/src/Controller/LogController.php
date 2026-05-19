@@ -1,19 +1,16 @@
 <?php
 
-namespace LogMonitor\Backend\Controllers;
+declare(strict_types=1);
 
-use LogMonitor\Backend\Services\LogService;
+namespace LogMonitor\Backend\Controller;
+
+use LogMonitor\Backend\Service\LogService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 class LogController
 {
-    private LogService $logService;
-
-    public function __construct()
-    {
-        $this->logService = new LogService();
-    }
+    public function __construct(private LogService $logService) {}
 
     public function getLogs(Request $request, Response $response): Response
     {

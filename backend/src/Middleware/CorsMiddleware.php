@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace LogMonitor\Backend\Middleware;
 
 use Psr\Http\Message\ResponseFactoryInterface;
