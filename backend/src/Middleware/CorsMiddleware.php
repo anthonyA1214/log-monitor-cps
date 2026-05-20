@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace LogMonitor\Backend\Middleware;
 
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -26,7 +29,7 @@ class CorsMiddleware implements MiddlewareInterface
 
         return $response
             ->withHeader('Access-Control-Allow-Credentials', 'true')
-            ->withHeader('Access-Control-Allow-Origin', $_ENV['FRONTEND_URL'])
+            ->withHeader('Access-Control-Allow-Origin', FRONTEND_URL)
             ->withHeader('Access-Control-Allow-Headers', '*')
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
             ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')

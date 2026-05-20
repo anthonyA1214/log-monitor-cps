@@ -1,0 +1,7 @@
+{
+    "logs_directory": "C:\\Users\\Anton\\Desktop\\dog",
+    "allowed_extensions": [
+        "log",
+        "txt"
+    ]
+}
