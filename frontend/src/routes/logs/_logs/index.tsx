@@ -6,7 +6,7 @@ import { logsQueries } from "@/lib/api/logs"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/logs/_logs/")({
   loader: ({ context: { queryClient } }) => {
     return queryClient.ensureQueryData(logsQueries.all())
   },
@@ -15,10 +15,10 @@ export const Route = createFileRoute("/")({
       <p className="text-muted-foreground">{error.message}</p>
     </div>
   ),
-  component: Index,
+  component: LogsPage,
 })
 
-function Index() {
+function LogsPage() {
   const time = useMilitaryTime()
   const { data = [] } = useSuspenseQuery({
     ...logsQueries.all(),
@@ -26,7 +26,7 @@ function Index() {
   })
 
   return (
-    <ContentLayout title="File Logs">
+    <ContentLayout title="Logs">
       <div className="flex flex-col gap-4">
         {/* header */}
         <div className="flex items-center justify-between">

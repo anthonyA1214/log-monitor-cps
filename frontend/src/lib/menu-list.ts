@@ -4,8 +4,8 @@ import {
   Settings,
   // Bookmark,
   // SquarePen,
-  LayoutGrid,
   type LucideIcon,
+  ScrollText,
 } from "lucide-react"
 
 type Submenu = {
@@ -35,10 +35,10 @@ export function getMenuList(pathname: string): Group[] {
       groupLabel: "",
       menus: [
         {
-          id: "dashboard",
-          href: "/",
-          label: "Dashboard",
-          icon: LayoutGrid,
+          id: "logs",
+          href: "/logs",
+          label: "Logs",
+          icon: ScrollText,
           submenus: [],
         },
         {
