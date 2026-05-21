@@ -6,6 +6,7 @@ import type { Log } from "@/types/logs"
 import { getTimeStatus } from "@/lib/time-status"
 import { cn } from "@/lib/utils"
 import { Link } from "@tanstack/react-router"
+import { Badge } from "./ui/badge"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -47,21 +48,23 @@ export const columns: ColumnDef<Log>[] = [
       const ago = formatDistanceToNow(date, { addSuffix: true })
 
       return (
-        <span
+        <Badge
           className={cn(
-            "rounded-md px-2 py-1 text-xs font-medium",
-            status === "green" && "bg-green-100 text-green-700",
-            status === "yellow" && "bg-yellow-100 text-yellow-700",
-            status === "red" && "bg-red-100 text-red-700"
+            "text-xs",
+            status === "up-to-date"
+              ? "bg-green-100 text-green-800"
+              : status === "delayed"
+                ? "bg-yellow-100 text-yellow-800"
+                : "bg-red-100 text-red-800"
           )}
         >
-          {status === "green"
-            ? "Recent"
-            : status === "yellow"
-              ? "Aging"
-              : "Old"}{" "}
-          — {ago}
-        </span>
+          {status === "up-to-date"
+            ? "Up to date"
+            : status === "delayed"
+              ? "Delayed"
+              : "Stale"}{" "}
+          ({ago})
+        </Badge>
       )
     },
   },
