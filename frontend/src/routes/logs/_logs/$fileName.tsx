@@ -1,11 +1,11 @@
 import { ContentLayout } from "@/components/admin-panel/content-layout"
-import { logsQueries } from "@/lib/api/logs"
+import { logsQueryOptions } from "@/lib/api/logs"
 import { createFileRoute } from "@tanstack/react-router"
 import { Button } from "@/components/ui/button"
 
 export const Route = createFileRoute("/logs/_logs/$fileName")({
   loader: ({ context: { queryClient }, params: { fileName } }) => {
-    return queryClient.ensureQueryData(logsQueries.info(fileName))
+    return queryClient.ensureQueryData(logsQueryOptions.info(fileName))
   },
   component: LogsInfoPage,
 })

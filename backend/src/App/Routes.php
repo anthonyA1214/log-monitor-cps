@@ -20,7 +20,7 @@ return static function (App $app): void {
         // api/settings
         $group->group('/settings', function (RouteCollectorProxy $group) {
             $group->get('', [SettingsController::class, 'index']);
-            $group->put('', [SettingsController::class, 'update']);
+            $group->patch('', [SettingsController::class, 'update']);
         });
 
     });
