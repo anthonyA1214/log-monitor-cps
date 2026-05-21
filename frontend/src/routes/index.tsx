@@ -1,27 +1,32 @@
-import AddLogDialog from "@/components/add-log-dialog"
+import { ContentLayout } from "@/components/admin-panel/content-layout"
 import { columns } from "@/components/columns"
 import { DataTable } from "@/components/data-table"
 import { useMilitaryTime } from "@/hooks/use-military-time"
 import { logsQueries } from "@/lib/api/logs"
-import { useQuery } from "@tanstack/react-query"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/")({
+  loader: ({ context: { queryClient } }) => {
+    return queryClient.ensureQueryData(logsQueries.all())
+  },
+  errorComponent: ({ error }) => (
+    <div className="flex min-h-svh items-center justify-center">
+      <p className="text-muted-foreground">{error.message}</p>
+    </div>
+  ),
   component: Index,
 })
 
 function Index() {
   const time = useMilitaryTime()
-  const { data, isPending } = useQuery({
+  const { data = [] } = useSuspenseQuery({
     ...logsQueries.all(),
-    initialData: [],
     refetchInterval: 5000, // Refetch every 5 seconds
   })
 
-  if (isPending) return <p>Loading...</p>
-
   return (
-    <div className="flex min-h-svh flex-col gap-6 p-6">
+    <ContentLayout title="File Logs">
       <div className="flex flex-col gap-4">
         {/* header */}
         <div className="flex items-center justify-between">
@@ -38,13 +43,13 @@ function Index() {
               {time}
             </span>
 
-            <AddLogDialog />
+            {/* <AddLogDialog /> */}
           </div>
         </div>
 
         {/* table */}
         <DataTable columns={columns} data={data} />
       </div>
-    </div>
+    </ContentLayout>
   )
 }

@@ -1,16 +1,29 @@
-import { createRootRoute, Outlet } from "@tanstack/react-router"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import {
+  createRootRouteWithContext,
+  Link,
+  Outlet,
+} from "@tanstack/react-router"
+import { type QueryClient } from "@tanstack/react-query"
+import AdminPanelLayout from "@/components/admin-panel/admin-panel-layout"
 
-const queryClient = new QueryClient()
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
+  {
+    component: RootComponent,
+    notFoundComponent: () => {
+      return (
+        <div className="flex h-screen w-full flex-col items-center justify-center overflow-hidden">
+          <p>This is the notFoundComponent configured on root route</p>
+          <Link to="/">Start Over</Link>
+        </div>
+      )
+    },
+  }
+)
 
-export const Route = createRootRoute({
-  component: RootLayout,
-})
-
-function RootLayout() {
+function RootComponent() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <AdminPanelLayout>
       <Outlet />
-    </QueryClientProvider>
+    </AdminPanelLayout>
   )
 }

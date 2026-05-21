@@ -3,9 +3,9 @@
 import { type ColumnDef } from "@tanstack/react-table"
 import { format, formatDistanceToNow } from "date-fns"
 import type { Log } from "@/types/logs"
-import { useLogsStore } from "@/store/logs-store"
 import { getTimeStatus } from "@/lib/time-status"
 import { cn } from "@/lib/utils"
+import { Link } from "@tanstack/react-router"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -15,24 +15,24 @@ export const columns: ColumnDef<Log>[] = [
     accessorKey: "fileName",
     header: "File Name",
     cell: ({ row }) => {
-      const { setFileName } = useLogsStore()
       const fileName = row.original.fileName
 
       return (
-        <button
+        <Link
           className="text-blue-500 hover:text-blue-700 hover:underline"
-          onClick={() => setFileName(fileName)}
+          to={`/logs/$fileName`}
+          params={{ fileName }}
         >
           {fileName}
-        </button>
+        </Link>
       )
     },
   },
   {
-    accessorKey: "dateModified",
+    accessorKey: "fileModifiedAt",
     header: "Date Modified",
     cell: ({ row }) => {
-      const date = new Date(row.original.dateModified)
+      const date = new Date(row.original.fileModifiedAt)
 
       return format(date, "MM/dd/yyyy - HH:mm:ss")
     },
@@ -41,7 +41,8 @@ export const columns: ColumnDef<Log>[] = [
     accessorKey: "timeStatus",
     header: "Time Status",
     cell: ({ row }) => {
-      const date = new Date(row.getValue("dateModified"))
+      const date = new Date(row.original.fileModifiedAt)
+
       const status = getTimeStatus(date)
       const ago = formatDistanceToNow(date, { addSuffix: true })
 
