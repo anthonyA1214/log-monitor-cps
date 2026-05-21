@@ -1,10 +1,14 @@
 import { env } from "@/env"
-import type { Log } from "@/types/logs"
 import { queryOptions } from "@tanstack/react-query"
 
-type RawLog = {
+type LogDTO = {
   file_name: string
   file_modified_at: string
+}
+
+type Log = {
+  fileName: string
+  fileModifiedAt: string
 }
 
 async function fetchLogs(): Promise<Log[]> {
@@ -12,7 +16,7 @@ async function fetchLogs(): Promise<Log[]> {
   if (!res.ok) {
     throw new Error("Failed to fetch logs")
   }
-  const data: RawLog[] = await res.json()
+  const data: LogDTO[] = await res.json()
   return data.map((log) => ({
     fileName: log.file_name,
     fileModifiedAt: log.file_modified_at,
@@ -30,7 +34,7 @@ async function fetchLogDetail(fileName: string): Promise<{ content: string }> {
   }
 }
 
-export const logsQueries = {
+export const logsQueryOptions = {
   all: () =>
     queryOptions({
       queryKey: ["logs"],
