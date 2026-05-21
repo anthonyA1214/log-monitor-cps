@@ -4,7 +4,7 @@ import { queryOptions } from "@tanstack/react-query"
 
 type RawLog = {
   file_name: string
-  date_modified: string
+  file_modified_at: string
 }
 
 async function fetchLogs(): Promise<Log[]> {
@@ -15,7 +15,7 @@ async function fetchLogs(): Promise<Log[]> {
   const data: RawLog[] = await res.json()
   return data.map((log) => ({
     fileName: log.file_name,
-    dateModified: log.date_modified,
+    fileModifiedAt: log.file_modified_at,
   }))
 }
 
@@ -37,7 +37,7 @@ export const logsQueries = {
       queryFn: fetchLogs,
     }),
 
-  detail: (fileName: string) =>
+  info: (fileName: string) =>
     queryOptions({
       queryKey: ["logs", fileName],
       queryFn: () => fetchLogDetail(fileName),

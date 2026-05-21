@@ -26,7 +26,7 @@ export default function AddLogDialog() {
 
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button variant="secondary" className="flex items-center gap-2">
           <Plus />
           <span>Add Log</span>

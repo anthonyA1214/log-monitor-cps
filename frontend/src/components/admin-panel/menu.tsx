@@ -1,4 +1,4 @@
-import { Ellipsis, LogOut } from "lucide-react"
+import { Ellipsis } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getMenuList } from "@/lib/menu-list"
 import { Button } from "@/components/ui/button"
@@ -11,6 +11,7 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip"
 import { Link, useLocation } from "@tanstack/react-router"
+import { motion } from "motion/react"
 
 interface MenuProps {
   isOpen: boolean | undefined
@@ -48,70 +49,87 @@ export function Menu({ isOpen }: MenuProps) {
               ) : (
                 <p className="pb-2"></p>
               )}
-              {menus.map(
-                ({ href, label, icon: Icon, active, submenus }, index) =>
-                  !submenus || submenus.length === 0 ? (
-                    <div className="w-full" key={index}>
-                      <TooltipProvider disableHoverableContent>
-                        <Tooltip delayDuration={100}>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant={
-                                (active === undefined &&
-                                  pathname.startsWith(href)) ||
-                                active
-                                  ? "secondary"
-                                  : "ghost"
-                              }
-                              className="mb-1 h-10 w-full justify-start"
-                              asChild
-                            >
-                              <Link to={href}>
-                                <span
-                                  className={cn(isOpen === false ? "" : "mr-4")}
-                                >
-                                  <Icon size={18} />
-                                </span>
-                                <p
-                                  className={cn(
-                                    "max-w-50 truncate",
-                                    isOpen === false
-                                      ? "-translate-x-96 opacity-0"
-                                      : "translate-x-0 opacity-100"
-                                  )}
-                                >
-                                  {label}
-                                </p>
-                              </Link>
-                            </Button>
-                          </TooltipTrigger>
-                          {isOpen === false && (
-                            <TooltipContent side="right">
-                              {label}
-                            </TooltipContent>
-                          )}
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  ) : (
-                    <div className="w-full" key={index}>
-                      <CollapseMenuButton
-                        icon={Icon}
-                        label={label}
-                        active={
-                          active === undefined
-                            ? pathname.startsWith(href)
-                            : active
-                        }
-                        submenus={submenus}
-                        isOpen={isOpen}
+              {menus.map(({ id, href, label, icon: Icon, active, submenus }) =>
+                !submenus || submenus.length === 0 ? (
+                  <div className="relative w-full" key={id}>
+                    {active === undefined && pathname === href && (
+                      <motion.div
+                        className="absolute top-0 left-0 h-full w-1 rounded-md bg-primary"
+                        layoutId="active-menu-indicator"
                       />
-                    </div>
-                  )
+                    )}
+
+                    {active === undefined && pathname === href && (
+                      <motion.div
+                        className="absolute top-0 left-0 h-full w-full rounded-md bg-primary/10"
+                        layoutId="active-menu-background"
+                      />
+                    )}
+
+                    <TooltipProvider disableHoverableContent>
+                      <Tooltip delayDuration={100}>
+                        <TooltipTrigger asChild>
+                          <Button
+                            asChild
+                            className={cn(
+                              "text-muted1 hover:text-text mb-1 h-10 w-full justify-start ps-4",
+                              active === undefined &&
+                                pathname === href &&
+                                "text-primary! hover:bg-transparent!"
+                            )}
+                            variant="ghost"
+                          >
+                            <Link
+                              className="relative flex w-full items-center"
+                              to={href}
+                            >
+                              <span
+                                className={cn(
+                                  isOpen === false
+                                    ? "absolute left-1/2 -translate-x-1/2"
+                                    : "mr-4"
+                                )}
+                              >
+                                <Icon size={18} />
+                              </span>
+                              <p
+                                className={cn(
+                                  "max-w-50 truncate",
+                                  isOpen === false
+                                    ? "-translate-x-96 opacity-0"
+                                    : "translate-x-0 opacity-100"
+                                )}
+                              >
+                                {label}
+                              </p>
+                            </Link>
+                          </Button>
+                        </TooltipTrigger>
+                        {isOpen === false && (
+                          <TooltipContent side="right">{label}</TooltipContent>
+                        )}
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                ) : (
+                  <div className="w-full" key={id}>
+                    <CollapseMenuButton
+                      active={
+                        active === undefined
+                          ? pathname.startsWith(href)
+                          : active
+                      }
+                      icon={Icon}
+                      isOpen={isOpen}
+                      label={label}
+                      submenus={submenus}
+                    />
+                  </div>
+                )
               )}
             </li>
           ))}
-          <li className="flex w-full grow items-end">
+          {/* <li className="flex w-full grow items-end">
             <TooltipProvider disableHoverableContent>
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
@@ -138,7 +156,7 @@ export function Menu({ isOpen }: MenuProps) {
                 )}
               </Tooltip>
             </TooltipProvider>
-          </li>
+          </li> */}
         </ul>
       </nav>
     </ScrollArea>
