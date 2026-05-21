@@ -8,49 +8,49 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as SettingsIndexRouteImport } from './routes/settings/index'
-import { Route as LogsFileNameRouteImport } from './routes/logs/$fileName'
+import { Route as rootRouteImport } from "./routes/__root"
+import { Route as IndexRouteImport } from "./routes/index"
+import { Route as SettingsIndexRouteImport } from "./routes/settings/index"
+import { Route as LogsFileNameRouteImport } from "./routes/logs/$fileName"
 
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsIndexRoute = SettingsIndexRouteImport.update({
-  id: '/settings/',
-  path: '/settings/',
+  id: "/settings/",
+  path: "/settings/",
   getParentRoute: () => rootRouteImport,
 } as any)
 const LogsFileNameRoute = LogsFileNameRouteImport.update({
-  id: '/logs/$fileName',
-  path: '/logs/$fileName',
+  id: "/logs/$fileName",
+  path: "/logs/$fileName",
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/logs/$fileName': typeof LogsFileNameRoute
-  '/settings/': typeof SettingsIndexRoute
+  "/": typeof IndexRoute
+  "/logs/$fileName": typeof LogsFileNameRoute
+  "/settings/": typeof SettingsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/logs/$fileName': typeof LogsFileNameRoute
-  '/settings': typeof SettingsIndexRoute
+  "/": typeof IndexRoute
+  "/logs/$fileName": typeof LogsFileNameRoute
+  "/settings": typeof SettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/logs/$fileName': typeof LogsFileNameRoute
-  '/settings/': typeof SettingsIndexRoute
+  "/": typeof IndexRoute
+  "/logs/$fileName": typeof LogsFileNameRoute
+  "/settings/": typeof SettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/logs/$fileName' | '/settings/'
+  fullPaths: "/" | "/logs/$fileName" | "/settings/"
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/logs/$fileName' | '/settings'
-  id: '__root__' | '/' | '/logs/$fileName' | '/settings/'
+  to: "/" | "/logs/$fileName" | "/settings"
+  id: "__root__" | "/" | "/logs/$fileName" | "/settings/"
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -59,26 +59,26 @@ export interface RootRouteChildren {
   SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
+    "/": {
+      id: "/"
+      path: "/"
+      fullPath: "/"
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/settings/': {
-      id: '/settings/'
-      path: '/settings'
-      fullPath: '/settings/'
+    "/settings/": {
+      id: "/settings/"
+      path: "/settings"
+      fullPath: "/settings/"
       preLoaderRoute: typeof SettingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/logs/$fileName': {
-      id: '/logs/$fileName'
-      path: '/logs/$fileName'
-      fullPath: '/logs/$fileName'
+    "/logs/$fileName": {
+      id: "/logs/$fileName"
+      path: "/logs/$fileName"
+      fullPath: "/logs/$fileName"
       preLoaderRoute: typeof LogsFileNameRouteImport
       parentRoute: typeof rootRouteImport
     }
