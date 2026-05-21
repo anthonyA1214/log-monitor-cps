@@ -2,13 +2,13 @@ import { ContentLayout } from "@/components/admin-panel/content-layout"
 import { columns } from "@/components/columns"
 import { DataTable } from "@/components/data-table"
 import { useMilitaryTime } from "@/hooks/use-military-time"
-import { logsQueries } from "@/lib/api/logs"
+import { logsQueryOptions } from "@/lib/api/logs"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/logs/_logs/")({
   loader: ({ context: { queryClient } }) => {
-    return queryClient.ensureQueryData(logsQueries.all())
+    return queryClient.ensureQueryData(logsQueryOptions.all())
   },
   errorComponent: ({ error }) => (
     <div className="flex min-h-svh items-center justify-center">
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/logs/_logs/")({
 function LogsPage() {
   const time = useMilitaryTime()
   const { data = [] } = useSuspenseQuery({
-    ...logsQueries.all(),
+    ...logsQueryOptions.all(),
     refetchInterval: 5000, // Refetch every 5 seconds
   })
 

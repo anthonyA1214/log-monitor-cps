@@ -1,41 +1,30 @@
 import { ContentLayout } from "@/components/admin-panel/content-layout"
-import { Button } from "@/components/ui/button"
 import { createFileRoute } from "@tanstack/react-router"
-import { Input } from "@/components/ui/input"
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { settingsQueryOptions } from "@/lib/api/settings"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import SettingsForm from "./-settings-form"
 
 export const Route = createFileRoute("/settings/")({
+  loader: ({ context: { queryClient } }) => {
+    return queryClient.ensureQueryData(settingsQueryOptions.all())
+  },
+  errorComponent: () => <div>Failed to load settings</div>,
   component: SettingsPage,
 })
 
 function SettingsPage() {
+  const { data } = useSuspenseQuery(settingsQueryOptions.all())
+
   return (
     <ContentLayout title="Settings">
-      <h2 className="text-2Fxl absolute mt-3 font-semibold tracking-tight">
-        File Logs
-      </h2>
-      <div className="m-2 flex flex-row-reverse">
-        <Button>Edit</Button>
+      <div className="flex flex-col">
+        <h2 className="text-2xl font-semibold tracking-tight">Settings Page</h2>
+        <span className="text-sm text-muted-foreground">
+          This is the settings page. You can edit your settings here.
+        </span>
       </div>
-      <FieldGroup className="">
-        <Field className="rounded-[10px] bg-gray-200 p-4">
-          <FieldLabel htmlFor="file-name">Edit Default Name</FieldLabel>
-          <Input
-            id="file-name"
-            className="border bg-gray-300"
-            placeholder="  Input Default File Name"
-          />
-        </Field>
 
-        <Field className="rounded-[10px] bg-gray-200 p-4">
-          <FieldLabel htmlFor="absolute-path">Edit File Path</FieldLabel>
-          <Input
-            id="absolute-path"
-            className="border bg-gray-300"
-            placeholder="  Input File Path"
-          />
-        </Field>
-      </FieldGroup>
+      <SettingsForm data={data} />
     </ContentLayout>
   )
 }

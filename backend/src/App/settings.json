@@ -1,4 +1,7 @@
 {
-  "logs_directory": "C:\\Users\\Anton\\Desktop\\logs",
-  "allowed_extensions": ["log", "txt"]
+    "logs_directory": "C:\\Users\\Anton\\Desktop\\logs",
+    "allowed_extensions": [
+        "log",
+        "txt"
+    ]
 }
