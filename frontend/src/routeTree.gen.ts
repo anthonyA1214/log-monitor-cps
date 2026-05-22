@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as LogsLogsRouteImport } from './routes/logs/_logs'
 import { Route as LogsLogsIndexRouteImport } from './routes/logs/_logs/index'
 import { Route as LogsLogsFileNameRouteImport } from './routes/logs/_logs/$fileName'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsIndexRoute = SettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
@@ -36,18 +42,21 @@ const LogsLogsFileNameRoute = LogsLogsFileNameRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/logs': typeof LogsLogsRouteWithChildren
   '/settings/': typeof SettingsIndexRoute
   '/logs/$fileName': typeof LogsLogsFileNameRoute
   '/logs/': typeof LogsLogsIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/settings': typeof SettingsIndexRoute
   '/logs/$fileName': typeof LogsLogsFileNameRoute
   '/logs': typeof LogsLogsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/logs/_logs': typeof LogsLogsRouteWithChildren
   '/settings/': typeof SettingsIndexRoute
   '/logs/_logs/$fileName': typeof LogsLogsFileNameRoute
@@ -55,11 +64,12 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/logs' | '/settings/' | '/logs/$fileName' | '/logs/'
+  fullPaths: '/' | '/logs' | '/settings/' | '/logs/$fileName' | '/logs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/settings' | '/logs/$fileName' | '/logs'
+  to: '/' | '/settings' | '/logs/$fileName' | '/logs'
   id:
     | '__root__'
+    | '/'
     | '/logs/_logs'
     | '/settings/'
     | '/logs/_logs/$fileName'
@@ -67,12 +77,20 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   LogsLogsRoute: typeof LogsLogsRouteWithChildren
   SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings/': {
       id: '/settings/'
       path: '/settings'
@@ -119,6 +137,7 @@ const LogsLogsRouteWithChildren = LogsLogsRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   LogsLogsRoute: LogsLogsRouteWithChildren,
   SettingsIndexRoute: SettingsIndexRoute,
 }

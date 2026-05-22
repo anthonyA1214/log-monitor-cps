@@ -2,11 +2,15 @@
 
 import { type ColumnDef } from "@tanstack/react-table"
 import { format, formatDistanceToNow } from "date-fns"
-import type { Log } from "@/types/logs"
-import { getTimeStatus } from "@/lib/time-status"
+import {
+  FILE_STATUS_LABEL,
+  FILE_STATUS_STYLES,
+  getTimeStatus,
+} from "@/lib/file-status"
 import { cn } from "@/lib/utils"
 import { Link } from "@tanstack/react-router"
 import { Badge } from "./ui/badge"
+import type { Log } from "@/lib/schemas/logs"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -43,27 +47,12 @@ export const columns: ColumnDef<Log>[] = [
     header: "Time Status",
     cell: ({ row }) => {
       const date = new Date(row.original.fileModifiedAt)
-
       const status = getTimeStatus(date)
-      const ago = formatDistanceToNow(date, { addSuffix: true })
 
       return (
-        <Badge
-          className={cn(
-            "text-xs",
-            status === "up-to-date"
-              ? "bg-green-100 text-green-800"
-              : status === "delayed"
-                ? "bg-yellow-100 text-yellow-800"
-                : "bg-red-100 text-red-800"
-          )}
-        >
-          {status === "up-to-date"
-            ? "Up to date"
-            : status === "delayed"
-              ? "Delayed"
-              : "Stale"}{" "}
-          ({ago})
+        <Badge className={cn("text-sm", FILE_STATUS_STYLES[status])}>
+          {FILE_STATUS_LABEL[status]} -{" "}
+          {formatDistanceToNow(date, { addSuffix: true })}
         </Badge>
       )
     },

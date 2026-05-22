@@ -1,14 +1,10 @@
 import { env } from "@/env"
 import { queryOptions } from "@tanstack/react-query"
+import type { Log } from "../schemas/logs"
 
 type LogDTO = {
   file_name: string
   file_modified_at: string
-}
-
-type Log = {
-  fileName: string
-  fileModifiedAt: string
 }
 
 async function fetchLogs(): Promise<Log[]> {
