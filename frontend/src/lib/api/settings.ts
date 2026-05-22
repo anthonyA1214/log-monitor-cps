@@ -3,6 +3,7 @@ import type { Settings } from "../schemas/settings"
 
 type SettingsDTO = {
   logs_directory: string
+  common_prefix: string
 }
 
 async function fetchSettings(): Promise<Settings> {
@@ -16,6 +17,7 @@ async function fetchSettings(): Promise<Settings> {
 
   return {
     logsDirectory: data.logs_directory,
+    commonPrefix: data.common_prefix,
   }
 }
 
@@ -27,6 +29,7 @@ async function updateSettings(settings: Settings): Promise<Settings> {
     },
     body: JSON.stringify({
       logs_directory: settings.logsDirectory,
+      common_prefix: settings.commonPrefix,
     }),
   })
 
@@ -38,6 +41,7 @@ async function updateSettings(settings: Settings): Promise<Settings> {
 
   return {
     logsDirectory: data.logs_directory,
+    commonPrefix: data.common_prefix,
   }
 }
 
