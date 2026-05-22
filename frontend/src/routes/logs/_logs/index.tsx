@@ -1,3 +1,4 @@
+import AddLogDialog from "@/components/add-log-dialog"
 import { ContentLayout } from "@/components/admin-panel/content-layout"
 import { columns } from "@/components/columns"
 import { DataTable } from "@/components/data-table"
@@ -33,18 +34,18 @@ function LogsPage() {
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold tracking-tight">Logs Page</h2>
 
-            <span className="font-mono text-sm text-muted-foreground">
-              {time}
-            </span>
+            <div className="flex items-center gap-2">
+              {/* military time */}
+              <span className="font-mono text-sm text-muted-foreground">
+                {time}
+              </span>
+              <AddLogDialog />
+            </div>
           </div>
 
-          {/* military time */}
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              View and monitor your application logs in real-time.
-            </span>
-            {/* <AddLogDialog /> */}
-          </div>
+          <span className="text-sm text-muted-foreground">
+            View and monitor your application logs in real-time.
+          </span>
         </div>
 
         {/* table */}

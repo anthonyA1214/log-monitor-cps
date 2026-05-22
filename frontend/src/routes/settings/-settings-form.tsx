@@ -112,13 +112,14 @@ export default function SettingsForm({ data }: Props) {
             {...register("commonPrefix")}
             aria-invalid={!!errors.commonPrefix}
             id="common-prefix"
-            placeholder="e.g., error, access"
+            placeholder="e.g., error-, access_, log."
             disabled={!isEditing}
           />
           <FieldDescription>
-            A common prefix to filter log files (e.g., <code>error</code> for
-            files like <code>error_01-05-2026.txt</code>). If left empty, all{" "}
-            <code>.txt</code> files in the directory will be detected.
+            A common prefix to filter log files (e.g., <code>error_</code> for
+            files like <code>error_01-05-2026.txt</code>). Separate multiple
+            prefixes with a comma. If left empty, all <code>.txt</code> files in
+            the directory will be detected.
           </FieldDescription>
           {errors.commonPrefix && (
             <FieldError>{errors.commonPrefix.message}</FieldError>

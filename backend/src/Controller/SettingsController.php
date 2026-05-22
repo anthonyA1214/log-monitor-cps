@@ -25,9 +25,17 @@ class SettingsController
     {
         $data = $request->getParsedBody();
 
+        if (isset($data['common_prefix']) && is_string($data['common_prefix'])) {
+                $data['common_prefix'] = array_values(array_filter(
+                array_map('trim', explode(',', $data['common_prefix'])),
+                fn($v) => $v !== ''
+            ));
+        }
+
         try {
             v::arrayType()
                 ->key('logs_directory', v::stringType()->notEmpty())
+                ->key('common_prefix', v::arrayType()->each(v::stringType()->notEmpty()))
                 ->assert($data);
         } catch (NestedValidationException $e) {
             $response->getBody()->write(json_encode([
@@ -37,7 +45,11 @@ class SettingsController
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         }
 
-        $updatedSettings = $this->settingsService->updateSettings($data);
+        $updatedSettings = $this->settingsService->updateSettings([
+            'logs_directory' => $data['logs_directory'],
+            'common_prefix'  => $data['common_prefix'],
+        ]);
+
         $response->getBody()->write(json_encode($updatedSettings));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }

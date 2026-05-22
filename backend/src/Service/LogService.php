@@ -13,10 +13,30 @@ class LogService
     public function getLogFiles(): array
     {
         // Implementation for getting log files
-        $files = glob($this->settings->get('logs_directory') . '/*.txt');
+        $logsDir = $this->settings->get('logs_directory');
+        $commonPrefix = $this->settings->get('common_prefix') ?: [];
         $logs = [];
 
+        $files = glob($logsDir . '/*.txt');
+
         foreach ($files as $file) {
+            $fileName = basename($file);
+
+            // If common prefixes are defined, filter files accordingly
+            if (!empty($commonPrefix)) {
+                $matched = false;
+                foreach ($commonPrefix as $prefix) {
+                    if (str_starts_with($fileName, $prefix)) {
+                        $matched = true;
+                        break;
+                    }
+                }
+
+                if (!$matched) {
+                    continue; // Skip files that don't match any prefix
+                }
+            }
+
             $logs[] = [
                 'file_name' => basename($file),
                 'file_modified_at' => date('c', filemtime($file)),
@@ -36,6 +56,11 @@ class LogService
         }
 
         $content = file_get_contents($filePath);
-        return ['content' => $content];
+
+
+        return [
+            'file_modified_at' => date('c', filemtime($filePath)),
+            'content' => $content
+        ];
     }
 }
