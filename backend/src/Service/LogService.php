@@ -56,6 +56,11 @@ class LogService
         }
 
         $content = file_get_contents($filePath);
-        return ['content' => $content];
+
+
+        return [
+            'file_modified_at' => date('c', filemtime($filePath)),
+            'content' => $content
+        ];
     }
 }
