@@ -1,5 +1,9 @@
 {
     "logs_directory": "C:\\Users\\Anton\\Desktop\\logs",
+    "common_prefix": [
+        "error",
+        "access"
+    ],
     "allowed_extensions": [
         "log",
         "txt"

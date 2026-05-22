@@ -6,7 +6,8 @@ import SettingsForm from "./-settings-form"
 
 export const Route = createFileRoute("/settings/")({
   loader: ({ context: { queryClient } }) => {
-    return queryClient.ensureQueryData(settingsQueryOptions.all())
+    queryClient.ensureQueryData(settingsQueryOptions.all())
+    return { crumb: "Settings" }
   },
   errorComponent: () => <div>Failed to load settings</div>,
   component: SettingsPage,
@@ -16,7 +17,7 @@ function SettingsPage() {
   const { data } = useSuspenseQuery(settingsQueryOptions.all())
 
   return (
-    <ContentLayout title="Settings">
+    <ContentLayout>
       <div className="flex flex-col">
         <h2 className="text-2xl font-semibold tracking-tight">Settings Page</h2>
         <span className="text-sm text-muted-foreground">

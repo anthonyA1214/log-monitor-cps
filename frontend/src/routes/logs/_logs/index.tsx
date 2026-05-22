@@ -26,23 +26,23 @@ function LogsPage() {
   })
 
   return (
-    <ContentLayout title="Logs">
-      <div className="flex flex-col gap-4">
+    <ContentLayout>
+      <div className="flex h-full min-h-0 flex-col gap-4">
         {/* header */}
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col">
-            <h2 className="text-2xl font-semibold tracking-tight">File Logs</h2>
-            <span className="text-sm text-muted-foreground">
-              {data.length} total logs
+        <div className="flex flex-col">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold tracking-tight">Logs Page</h2>
+
+            <span className="font-mono text-sm text-muted-foreground">
+              {time}
             </span>
           </div>
 
           {/* military time */}
           <div className="flex items-center gap-2">
-            <span className="font-mono text-sm text-muted-foreground">
-              {time}
+            <span className="text-sm text-muted-foreground">
+              View and monitor your application logs in real-time.
             </span>
-
             {/* <AddLogDialog /> */}
           </div>
         </div>
