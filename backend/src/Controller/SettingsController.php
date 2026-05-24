@@ -26,9 +26,9 @@ class SettingsController
         $data = $request->getParsedBody();
 
         if (isset($data['common_prefix']) && is_string($data['common_prefix'])) {
-                $data['common_prefix'] = array_values(array_filter(
+            $data['common_prefix'] = array_values(array_filter(
                 array_map('trim', explode(',', $data['common_prefix'])),
-                fn($v) => $v !== ''
+                fn($v) => $v !== '',
             ));
         }
 

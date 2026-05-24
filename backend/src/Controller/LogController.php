@@ -12,6 +12,13 @@ class LogController
 {
     public function __construct(private LogService $logService) {}
 
+    public function sync(Request $request, Response $response): Response
+    {
+        $this->logService->syncLogs();
+        $response->getBody()->write(json_encode(['message' => 'Logs synchronized successfully']));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
     public function index(Request $request, Response $response): Response
     {
         $logs = $this->logService->getLogFiles();
