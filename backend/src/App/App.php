@@ -17,6 +17,8 @@ if (file_exists($envFile)) {
 }
 $dotenv->required(['DB_HOST', 'DB_USER', 'DB_PASS', 'DB_NAME', 'DB_PORT']);
 
+date_default_timezone_set(TIMEZONE);
+
 $container = new Container();
 AppFactory::setContainer($container);
 $app = AppFactory::create();

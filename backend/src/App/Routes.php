@@ -15,7 +15,7 @@ return static function (App $app): void {
             $group->get('', [LogController::class, 'index']);
             $group->post('', [LogController::class, 'store']);
             $group->post('/sync', [LogController::class, 'sync']);
-            $group->get('/{fileName:.+}', [LogController::class, 'show']);      
+            $group->get('/{logId}', [LogController::class, 'show']);      
         });
 
         // api/settings

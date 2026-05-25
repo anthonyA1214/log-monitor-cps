@@ -2,10 +2,13 @@ import AddLogDialog from "@/components/add-log-dialog"
 import { ContentLayout } from "@/components/admin-panel/content-layout"
 import { columns } from "@/components/columns"
 import { DataTable } from "@/components/data-table"
+import { Button } from "@/components/ui/button"
 import { useMilitaryTime } from "@/hooks/use-military-time"
-import { logsQueryOptions } from "@/lib/api/logs"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { logsQueryOptions, syncLogs } from "@/lib/api/logs"
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
+import { RefreshCw } from "lucide-react"
+import { toast } from "sonner"
 
 export const Route = createFileRoute("/logs/_logs/")({
   loader: ({ context: { queryClient } }) => {
@@ -20,10 +23,21 @@ export const Route = createFileRoute("/logs/_logs/")({
 })
 
 function LogsPage() {
+  const queryClient = useQueryClient()
   const time = useMilitaryTime()
   const { data = [] } = useSuspenseQuery({
     ...logsQueryOptions.all(),
     refetchInterval: 5000, // Refetch every 5 seconds
+  })
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: syncLogs,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: logsQueryOptions.all().queryKey })
+    },
+    onError: () => {
+      toast.error("Failed to sync logs");
+    },
   })
 
   return (
@@ -39,6 +53,17 @@ function LogsPage() {
               <span className="font-mono text-sm text-muted-foreground">
                 {time}
               </span>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => mutate()}
+                disabled={isPending}
+              >
+                <RefreshCw className={isPending ? "animate-spin" : ""} />
+                {isPending ? "Syncing..." : "Sync Logs"}
+              </Button>
+
               <AddLogDialog />
             </div>
           </div>

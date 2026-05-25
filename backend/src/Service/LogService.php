@@ -47,48 +47,45 @@ class LogService
         }
 
         $this->logRepository->markInactive($activeFiles);
+        $this->logRepository->deactivateOldLogs();
     }
 
     public function getLogFiles(): array
     {
-        // Implementation for getting log files
-        $logsDir = $this->settings->get('logs_directory');
-        $commonPrefix = $this->settings->get('common_prefix') ?: [];
-        $logs = [];
+        $logs = $this->logRepository->findCurrentLogs();
+        $result = [];
 
-        $files = glob($logsDir . '/*.txt');
+        foreach ($logs as $log) {
+            $filePath = $log['file_path'];
 
-        foreach ($files as $file) {
-            $fileName = basename($file);
-
-            // If common prefixes are defined, filter files accordingly
-            if (!empty($commonPrefix)) {
-                $matched = false;
-                foreach ($commonPrefix as $prefix) {
-                    if (str_starts_with($fileName, $prefix)) {
-                        $matched = true;
-                        break;
-                    }
-                }
-
-                if (!$matched) {
-                    continue; // Skip files that don't match any prefix
-                }
+            if (!file_exists($filePath)) {
+                $this->logRepository->markInactiveById((int)$log['id']);
+                continue; // Skip files that no longer exist
             }
 
-            $logs[] = [
-                'file_name' => basename($file),
-                'file_modified_at' => date('c', filemtime($file)),
-            ];
+            clearstatcache(true, $filePath);
+            $fileModifiedAt = date('Y-m-d H:i:s', filemtime($filePath));
+
+            if ($fileModifiedAt !== $log['file_modified_at']) {
+                $this->logRepository->updateModifiedAt((int)$log['id'], $fileModifiedAt);
+            }
+
+            $result[] = $log;
         }
 
-        return $logs;
+        return $result;
     }
 
-    public function getLogContent(string $fileName): ?array
+    public function getLogContent(string $logId): ?array
     {
-        // Implementation for getting log content by file name
-        $filePath = $this->settings->get('logs_directory') . '/' . $fileName;
+        // Implementation for getting log content by log ID
+        $log = $this->logRepository->findById((int)$logId);
+
+        if (!$log) {
+            return null;
+        }
+
+        $filePath = $log['file_path'];
 
         if (!file_exists($filePath)) {
             return null;
@@ -96,8 +93,9 @@ class LogService
 
         $content = file_get_contents($filePath);
 
-
         return [
+            'id' => $log['id'],
+            'file_name' => $log['file_name'],
             'file_modified_at' => date('c', filemtime($filePath)),
             'content' => $content,
         ];
