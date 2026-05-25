@@ -28,9 +28,9 @@ class LogController
 
     public function show(Request $request, Response $response, array $args): Response
     {
-        $fileName = $args['fileName'];
+        $logId = $args['logId'];
 
-        $log = $this->logService->getLogContent($fileName);
+        $log = $this->logService->getLogContent($logId);
 
         if ($log === null) {
             $response->getBody()->write(json_encode(['error' => 'Log not found']));

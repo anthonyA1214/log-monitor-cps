@@ -13,7 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as LogsLogsRouteImport } from './routes/logs/_logs'
 import { Route as LogsLogsIndexRouteImport } from './routes/logs/_logs/index'
-import { Route as LogsLogsFileNameRouteImport } from './routes/logs/_logs/$fileName'
+import { Route as LogsLogsLogIdRouteImport } from './routes/logs/_logs/$logId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -35,9 +35,9 @@ const LogsLogsIndexRoute = LogsLogsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LogsLogsRoute,
 } as any)
-const LogsLogsFileNameRoute = LogsLogsFileNameRouteImport.update({
-  id: '/$fileName',
-  path: '/$fileName',
+const LogsLogsLogIdRoute = LogsLogsLogIdRouteImport.update({
+  id: '/$logId',
+  path: '/$logId',
   getParentRoute: () => LogsLogsRoute,
 } as any)
 
@@ -45,13 +45,13 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/logs': typeof LogsLogsRouteWithChildren
   '/settings/': typeof SettingsIndexRoute
-  '/logs/$fileName': typeof LogsLogsFileNameRoute
+  '/logs/$logId': typeof LogsLogsLogIdRoute
   '/logs/': typeof LogsLogsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/settings': typeof SettingsIndexRoute
-  '/logs/$fileName': typeof LogsLogsFileNameRoute
+  '/logs/$logId': typeof LogsLogsLogIdRoute
   '/logs': typeof LogsLogsIndexRoute
 }
 export interface FileRoutesById {
@@ -59,20 +59,20 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/logs/_logs': typeof LogsLogsRouteWithChildren
   '/settings/': typeof SettingsIndexRoute
-  '/logs/_logs/$fileName': typeof LogsLogsFileNameRoute
+  '/logs/_logs/$logId': typeof LogsLogsLogIdRoute
   '/logs/_logs/': typeof LogsLogsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/logs' | '/settings/' | '/logs/$fileName' | '/logs/'
+  fullPaths: '/' | '/logs' | '/settings/' | '/logs/$logId' | '/logs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/settings' | '/logs/$fileName' | '/logs'
+  to: '/' | '/settings' | '/logs/$logId' | '/logs'
   id:
     | '__root__'
     | '/'
     | '/logs/_logs'
     | '/settings/'
-    | '/logs/_logs/$fileName'
+    | '/logs/_logs/$logId'
     | '/logs/_logs/'
   fileRoutesById: FileRoutesById
 }
@@ -112,23 +112,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LogsLogsIndexRouteImport
       parentRoute: typeof LogsLogsRoute
     }
-    '/logs/_logs/$fileName': {
-      id: '/logs/_logs/$fileName'
-      path: '/$fileName'
-      fullPath: '/logs/$fileName'
-      preLoaderRoute: typeof LogsLogsFileNameRouteImport
+    '/logs/_logs/$logId': {
+      id: '/logs/_logs/$logId'
+      path: '/$logId'
+      fullPath: '/logs/$logId'
+      preLoaderRoute: typeof LogsLogsLogIdRouteImport
       parentRoute: typeof LogsLogsRoute
     }
   }
 }
 
 interface LogsLogsRouteChildren {
-  LogsLogsFileNameRoute: typeof LogsLogsFileNameRoute
+  LogsLogsLogIdRoute: typeof LogsLogsLogIdRoute
   LogsLogsIndexRoute: typeof LogsLogsIndexRoute
 }
 
 const LogsLogsRouteChildren: LogsLogsRouteChildren = {
-  LogsLogsFileNameRoute: LogsLogsFileNameRoute,
+  LogsLogsLogIdRoute: LogsLogsLogIdRoute,
   LogsLogsIndexRoute: LogsLogsIndexRoute,
 }
 

@@ -14,6 +14,11 @@ class SettingsService
     {
         $data = $this->settings->getAll();
         unset($data['settings_path']);
+
+        if (isset($data['common_prefix']) || is_array($data['common_prefix'])) {
+            $data['common_prefix'] = implode(', ', $data['common_prefix']);
+        }
+
         return $data;
     }
 
