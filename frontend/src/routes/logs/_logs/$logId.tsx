@@ -13,17 +13,17 @@ import { format, formatDistanceToNow } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 
-export const Route = createFileRoute("/logs/_logs/$fileName")({
-  loader: ({ context: { queryClient }, params: { fileName } }) => {
-    queryClient.ensureQueryData(logsQueryOptions.info(fileName))
-    return { crumb: fileName }
+export const Route = createFileRoute("/logs/_logs/$logId")({
+  loader: async ({ context: { queryClient }, params: { logId } }) => {
+    const data = await queryClient.ensureQueryData(logsQueryOptions.info(logId))
+    return { crumb: data.fileName }
   },
   component: LogsInfoPage,
 })
 
 function LogsInfoPage() {
-  const fileName = Route.useParams().fileName
-  const { data } = useSuspenseQuery(logsQueryOptions.info(fileName))
+  const logId = Route.useParams().logId
+  const { data } = useSuspenseQuery(logsQueryOptions.info(logId))
 
   const date = new Date(data.fileModifiedAt)
   const status = getTimeStatus(date)
@@ -42,7 +42,7 @@ function LogsInfoPage() {
           {/* Header */}
           <div className="flex justify-between gap-4 border-b p-4">
             <div className="flex flex-col gap-0.5">
-              <h2 className="text-base font-semibold">{fileName}</h2>
+              <h2 className="text-base font-semibold">{data.fileName}</h2>
             </div>
 
             {/* Status badge */}

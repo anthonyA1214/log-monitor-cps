@@ -20,13 +20,14 @@ export const columns: ColumnDef<Log>[] = [
     accessorKey: "fileName",
     header: "File Name",
     cell: ({ row }) => {
+      const logId = row.original.id
       const fileName = row.original.fileName
 
       return (
         <Link
           className="text-blue-500 hover:text-blue-700 hover:underline"
-          to={`/logs/$fileName`}
-          params={{ fileName }}
+          to={`/logs/$logId`}
+          params={{ logId }}
         >
           {fileName}
         </Link>
@@ -43,8 +44,8 @@ export const columns: ColumnDef<Log>[] = [
     },
   },
   {
-    accessorKey: "timeStatus",
-    header: "Time Status",
+    accessorKey: "status",
+    header: "Status",
     cell: ({ row }) => {
       const date = new Date(row.original.fileModifiedAt)
       const status = getTimeStatus(date)

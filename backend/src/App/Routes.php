@@ -14,7 +14,8 @@ return static function (App $app): void {
         $group->group('/logs', function (RouteCollectorProxy $group) {
             $group->get('', [LogController::class, 'index']);
             $group->post('', [LogController::class, 'store']);
-            $group->get('/{fileName:.+}', [LogController::class, 'show']);
+            $group->post('/sync', [LogController::class, 'sync']);
+            $group->get('/{logId}', [LogController::class, 'show']);      
         });
 
         // api/settings

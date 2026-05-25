@@ -21,8 +21,6 @@ export const AppBreadCrumb = () => {
     }
   })
 
-  console.log(items)
-
   return (
     <Breadcrumb>
       <BreadcrumbList>

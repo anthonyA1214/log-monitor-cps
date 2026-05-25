@@ -5,24 +5,27 @@ declare(strict_types=1);
 namespace LogMonitor\Backend\Service;
 
 use LogMonitor\Backend\App\Settings;
+use LogMonitor\Backend\Repository\LogRepository;
 
 class LogService
 {
-    public function __construct(private Settings $settings) {}
+    public function __construct(private Settings $settings, private LogRepository $logRepository) {}
 
-    public function getLogFiles(): array
+    public function syncLogs(): void
     {
-        // Implementation for getting log files
         $logsDir = $this->settings->get('logs_directory');
         $commonPrefix = $this->settings->get('common_prefix') ?: [];
-        $logs = [];
 
         $files = glob($logsDir . '/*.txt');
+        $activeFiles = [];
 
         foreach ($files as $file) {
             $fileName = basename($file);
 
-            // If common prefixes are defined, filter files accordingly
+            if (!$this->isValidLogFile($fileName)) {
+                continue; // Skip files that don't match the expected pattern
+            }
+
             if (!empty($commonPrefix)) {
                 $matched = false;
                 foreach ($commonPrefix as $prefix) {
@@ -31,25 +34,58 @@ class LogService
                         break;
                     }
                 }
-
                 if (!$matched) {
                     continue; // Skip files that don't match any prefix
                 }
             }
 
-            $logs[] = [
-                'file_name' => basename($file),
-                'file_modified_at' => date('c', filemtime($file)),
-            ];
+            $filePath = realpath($file);
+            $fileModifiedAt = date('Y-m-d H:i:s', filemtime($file));
+
+            $this->logRepository->upsert($fileName, $filePath, $fileModifiedAt);
+            $activeFiles[] = $filePath;
         }
 
-        return $logs;
+        $this->logRepository->markInactive($activeFiles);
+        $this->logRepository->deactivateOldLogs();
     }
 
-    public function getLogContent(string $fileName): ?array
+    public function getLogFiles(): array
     {
-        // Implementation for getting log content by file name
-        $filePath = $this->settings->get('logs_directory') . '/' . $fileName;
+        $logs = $this->logRepository->findCurrentLogs();
+        $result = [];
+
+        foreach ($logs as $log) {
+            $filePath = $log['file_path'];
+
+            if (!file_exists($filePath)) {
+                $this->logRepository->markInactiveById((int)$log['id']);
+                continue; // Skip files that no longer exist
+            }
+
+            clearstatcache(true, $filePath);
+            $fileModifiedAt = date('Y-m-d H:i:s', filemtime($filePath));
+
+            if ($fileModifiedAt !== $log['file_modified_at']) {
+                $this->logRepository->updateModifiedAt((int)$log['id'], $fileModifiedAt);
+            }
+
+            $result[] = $log;
+        }
+
+        return $result;
+    }
+
+    public function getLogContent(string $logId): ?array
+    {
+        // Implementation for getting log content by log ID
+        $log = $this->logRepository->findById((int)$logId);
+
+        if (!$log) {
+            return null;
+        }
+
+        $filePath = $log['file_path'];
 
         if (!file_exists($filePath)) {
             return null;
@@ -57,10 +93,16 @@ class LogService
 
         $content = file_get_contents($filePath);
 
-
         return [
+            'id' => $log['id'],
+            'file_name' => $log['file_name'],
             'file_modified_at' => date('c', filemtime($filePath)),
-            'content' => $content
+            'content' => $content,
         ];
+    }
+
+    private function isValidLogFile(string $fileName): bool
+    {
+        return (bool) preg_match('/^[a-zA-Z]+_log-\d{4}-\d{2}-\d{2}\.txt$/', $fileName);
     }
 }
