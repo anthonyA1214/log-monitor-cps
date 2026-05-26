@@ -16,11 +16,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { settingsQueryOptions, updateSettings } from "@/lib/api/settings"
 import { toast } from "sonner"
 
-interface Props {
+interface SettingsFormProps {
   data: Settings
 }
 
-export default function SettingsForm({ data }: Props) {
+export default function SettingsForm({ data }: SettingsFormProps) {
   const queryClient = useQueryClient()
   const [isEditing, setIsEditing] = useState(false)
 

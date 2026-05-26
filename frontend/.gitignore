@@ -9,6 +9,7 @@ lerna-debug.log*
 
 !src/routes/logs
 !src/lib/api/logs
+!src/components/forms/logs
 
 .tanstack
 node_modules

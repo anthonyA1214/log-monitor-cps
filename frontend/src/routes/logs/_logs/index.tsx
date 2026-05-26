@@ -2,10 +2,16 @@ import AddLogDialog from "@/components/add-log-dialog"
 import { ContentLayout } from "@/components/admin-panel/content-layout"
 import { columns } from "@/components/columns"
 import { DataTable } from "@/components/data-table"
+import EditLogDialog from "@/components/edit-log-dialog"
 import { Button } from "@/components/ui/button"
 import { useMilitaryTime } from "@/hooks/use-military-time"
 import { logsQueryOptions, syncLogs } from "@/lib/api/logs"
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
+import { useLogsStore } from "@/store/logs-store"
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { RefreshCw } from "lucide-react"
 import { toast } from "sonner"
@@ -29,14 +35,17 @@ function LogsPage() {
     ...logsQueryOptions.all(),
     refetchInterval: 5000, // Refetch every 5 seconds
   })
+  const { logId } = useLogsStore()
 
   const { mutate, isPending } = useMutation({
     mutationFn: syncLogs,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: logsQueryOptions.all().queryKey })
+      queryClient.invalidateQueries({
+        queryKey: logsQueryOptions.all().queryKey,
+      })
     },
     onError: () => {
-      toast.error("Failed to sync logs");
+      toast.error("Failed to sync logs")
     },
   })
 
@@ -76,6 +85,8 @@ function LogsPage() {
         {/* table */}
         <DataTable columns={columns} data={data} />
       </div>
+
+      {logId && <EditLogDialog />}
     </ContentLayout>
   )
 }

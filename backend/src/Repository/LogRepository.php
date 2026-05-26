@@ -98,10 +98,22 @@ class LogRepository
 
     public function findById(int $id): ?array
     {
-        $sql = "SELECT id, file_name, file_path, file_modified_at FROM log_files WHERE id = :id";
+        $sql = "SELECT id, title, file_name, file_path, file_modified_at FROM log_files WHERE id = :id";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([':id' => $id]);
         return $stmt->fetch() ?: null;
+    }
+
+    public function updateLogInfo(int $id, array $data): void
+    {
+        $sql = "UPDATE log_files SET title = :title, file_name = :file_name, file_path = :file_path WHERE id = :id";
+
+        $this->pdo->prepare($sql)->execute([
+            ':title' => $data['title'] ?? null,
+            ':file_name' => $data['file_name'],
+            ':file_path' => $data['file_path'],
+            ':id' => $id,
+        ]);
     }
 }

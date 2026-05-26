@@ -6,6 +6,7 @@ import {
 import { type QueryClient } from "@tanstack/react-query"
 import AdminPanelLayout from "@/components/admin-panel/admin-panel-layout"
 import { Toaster } from "sonner"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   {
@@ -24,7 +25,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootComponent() {
   return (
     <AdminPanelLayout>
-      <Outlet />
+      <TooltipProvider>
+        <Outlet />
+      </TooltipProvider>
       <Toaster />
     </AdminPanelLayout>
   )
