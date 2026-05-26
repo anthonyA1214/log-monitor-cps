@@ -2,7 +2,7 @@ import { ContentLayout } from "@/components/admin-panel/content-layout"
 import { createFileRoute } from "@tanstack/react-router"
 import { settingsQueryOptions } from "@/lib/api/settings"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import SettingsForm from "./-settings-form"
+import SettingsForm from "../../components/forms/settings/settings-form"
 
 export const Route = createFileRoute("/settings/")({
   loader: ({ context: { queryClient } }) => {

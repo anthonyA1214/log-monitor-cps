@@ -4,13 +4,16 @@ import type { Log, LogInfo } from "../schemas/logs"
 
 type LogDTO = {
   id: string
+  title: string
   file_name: string
   file_modified_at: string
 }
 
 type LogInfoDTO = {
   id: string
+  title: string
   file_name: string
+  file_path: string
   file_modified_at: string
   content: string
 }
@@ -18,7 +21,7 @@ type LogInfoDTO = {
 async function syncLogs(): Promise<void> {
   const res = await fetch(`${env.VITE_API_URL}/api/logs/sync`, {
     method: "POST",
-  });
+  })
 
   if (!res.ok) {
     throw new Error("Failed to sync logs")
@@ -33,6 +36,7 @@ async function fetchLogs(): Promise<Log[]> {
   const data: LogDTO[] = await res.json()
   return data.map((log) => ({
     id: log.id,
+    title: log.title,
     fileName: log.file_name,
     fileModifiedAt: log.file_modified_at,
   }))
@@ -46,9 +50,41 @@ async function fetchLogInfo(logId: string): Promise<LogInfo> {
   const data: LogInfoDTO = await res.json()
   return {
     id: data.id,
+    title: data.title,
     fileName: data.file_name,
-    content: data.content,
+    filePath: data.file_path,
     fileModifiedAt: data.file_modified_at,
+    content: data.content,
+  }
+}
+
+async function updateLogInfo(
+  logId: string,
+  info: Partial<LogInfo>
+): Promise<LogInfo> {
+  const res = await fetch(`${env.VITE_API_URL}/api/logs/${logId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      title: info.title,
+      file_name: info.fileName,
+      file_path: info.filePath,
+    }),
+  })
+  if (!res.ok) {
+    throw new Error(`Failed to update log info for ${logId}`)
+  }
+
+  const data: LogInfoDTO = await res.json()
+  return {
+    id: data.id,
+    title: data.title,
+    fileName: data.file_name,
+    filePath: data.file_path,
+    fileModifiedAt: data.file_modified_at,
+    content: data.content,
   }
 }
 
@@ -66,4 +102,4 @@ export const logsQueryOptions = {
     }),
 }
 
-export { syncLogs }
+export { syncLogs, updateLogInfo }

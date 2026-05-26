@@ -76,9 +76,9 @@ class LogService
         return $result;
     }
 
-    public function getLogContent(string $logId): ?array
+    public function getLogInfo(string $logId): ?array
     {
-        // Implementation for getting log content by log ID
+        // Implementation for getting log info by log ID
         $log = $this->logRepository->findById((int)$logId);
 
         if (!$log) {
@@ -95,10 +95,26 @@ class LogService
 
         return [
             'id' => $log['id'],
+            'title' => $log['title'],
             'file_name' => $log['file_name'],
+            'file_path' => $log['file_path'],
             'file_modified_at' => date('c', filemtime($filePath)),
             'content' => $content,
         ];
+    }
+
+    public function updateLogInfo(string $logId, array $data): ?array
+    {
+        // Implementation for updating log info (e.g., title) by log ID
+        $log = $this->logRepository->findById((int)$logId);
+
+        if (!$log) {
+            return null;
+        }
+
+        $this->logRepository->updateLogInfo((int)$logId, $data);
+
+        return $this->getLogInfo($logId);
     }
 
     private function isValidLogFile(string $fileName): bool
