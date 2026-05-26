@@ -16,6 +16,7 @@ return static function (App $app): void {
             $group->post('', [LogController::class, 'store']);
             $group->post('/sync', [LogController::class, 'sync']);
             $group->get('/{logId}', [LogController::class, 'show']);      
+            $group->patch('/{logId}', [LogController::class, 'update']);
         });
 
         // api/settings

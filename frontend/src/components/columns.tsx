@@ -11,11 +11,22 @@ import { cn } from "@/lib/utils"
 import { Link } from "@tanstack/react-router"
 import { Badge } from "./ui/badge"
 import type { Log } from "@/lib/schemas/logs"
+import { useLogsStore } from "@/store/logs-store"
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
+import { Edit } from "lucide-react"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
 export const columns: ColumnDef<Log>[] = [
+  {
+    accessorKey: "title",
+    header: "Title",
+    cell: ({ row }) => {
+      const title = row.original.title
+      return <span className="font-medium">{title}</span>
+    },
+  },
   {
     accessorKey: "fileName",
     header: "File Name",
@@ -58,4 +69,29 @@ export const columns: ColumnDef<Log>[] = [
       )
     },
   },
+  {
+    accessorKey: "actions",
+    header: () => <span className="flex justify-center">Actions</span>,
+    cell: ({ row }) => {
+      const log = row.original
+      return <ActionCell row={log} />
+    },
+  },
 ]
+
+function ActionCell({ row }: { row: Log }) {
+  const { openDialog } = useLogsStore()
+
+  return (
+    <div className="flex justify-center gap-2">
+      <Tooltip>
+        <TooltipTrigger onClick={() => openDialog(row.id)}>
+          <Edit size={16} />
+        </TooltipTrigger>
+        <TooltipContent>
+          <span>Edit Log</span>
+        </TooltipContent>
+      </Tooltip>
+    </div>
+  )
+}
