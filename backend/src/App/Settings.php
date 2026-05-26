@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace LogMonitor\Backend\App;
 
-class Settings
+final class Settings
 {
-    public function __construct(private readonly array $data) {}
+    public function __construct(private readonly array $data)
+    {
+    }
 
     public function get(string $key, mixed $default = null): mixed
     {
