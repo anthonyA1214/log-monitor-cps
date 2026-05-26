@@ -22,6 +22,10 @@ export const updateLogInfoSchema = logInfoSchema
     fileName: true,
     filePath: true,
   })
+  .extend({
+    fileName: z.string().min(1, "File name is required"),
+    filePath: z.string().min(1, "File path is required"),
+  })
   .refine((data) => data.fileName.endsWith(".txt"), {
     message: "Only .txt files are allowed",
     path: ["fileName"],

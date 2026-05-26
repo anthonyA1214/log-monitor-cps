@@ -5,19 +5,22 @@ declare(strict_types=1);
 namespace LogMonitor\Backend\Controller;
 
 use LogMonitor\Backend\Service\SettingsService;
+use Respect\Validation\Exceptions\NestedValidationException;
+use Respect\Validation\Validator as v;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
-use Respect\Validation\Validator as v;
-use Respect\Validation\Exceptions\NestedValidationException;
 
-class SettingsController
+final class SettingsController
 {
-    public function __construct(private SettingsService $settingsService) {}
+    public function __construct(private SettingsService $settingsService)
+    {
+    }
 
     public function index(Request $request, Response $response): Response
     {
         $settings = $this->settingsService->getSettings();
-        $response->getBody()->write(json_encode($settings));
+        $response->getBody()->write(\json_encode($settings));
+
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -25,10 +28,10 @@ class SettingsController
     {
         $data = $request->getParsedBody();
 
-        if (isset($data['common_prefix']) && is_string($data['common_prefix'])) {
-            $data['common_prefix'] = array_values(array_filter(
-                array_map('trim', explode(',', $data['common_prefix'])),
-                fn($v) => $v !== '',
+        if (isset($data['common_prefix']) && \is_string($data['common_prefix'])) {
+            $data['common_prefix'] = \array_values(\array_filter(
+                \array_map('trim', \explode(',', $data['common_prefix'])),
+                static fn ($v) => '' !== $v,
             ));
         }
 
@@ -38,10 +41,11 @@ class SettingsController
                 ->key('common_prefix', v::arrayType()->each(v::stringType()->notEmpty()))
                 ->assert($data);
         } catch (NestedValidationException $e) {
-            $response->getBody()->write(json_encode([
-                'error' => 'Validation failed',
+            $response->getBody()->write(\json_encode([
+                'error'    => 'Validation failed',
                 'messages' => $e->getMessages(),
             ]));
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         }
 
@@ -50,7 +54,8 @@ class SettingsController
             'common_prefix'  => $data['common_prefix'],
         ]);
 
-        $response->getBody()->write(json_encode($updatedSettings));
+        $response->getBody()->write(\json_encode($updatedSettings));
+
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 }

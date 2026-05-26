@@ -10,14 +10,16 @@
         "slim/psr7": "^1.8",
         "php-di/php-di": "^7.1",
         "respect/validation": "^2.4",
-        "vlucas/phpdotenv": "^5.6"
+        "vlucas/phpdotenv": "^5.6",
+        "php-di/slim-bridge": "^3.4"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.95"
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "ergebnis/php-cs-fixer-config": "^6.62"
     },
     "scripts": {
         "start": "php -S localhost:3000 -t public public/index.php",
-        "fix": "php-cs-fixer fix"
+        "format": "php-cs-fixer fix"
     },
     "config": {
         "process-timeout": 0
