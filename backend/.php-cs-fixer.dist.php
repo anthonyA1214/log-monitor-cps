@@ -2,27 +2,23 @@
 
 declare(strict_types=1);
 
-use PhpCsFixer\Config;
+use Ergebnis\PhpCsFixer\Config;
 use PhpCsFixer\Finder;
 
-return (new Config())
-    ->setRiskyAllowed(false)
-    ->setRules([
-        '@auto' => true
-    ])
-    // 💡 by default, Fixer looks for `*.php` files excluding `./vendor/` - here, you can groom this config
-    ->setFinder(
-        (new Finder())
-            // 💡 root folder to check
-            ->in(__DIR__)
-            // 💡 additional files, eg bin entry file
-            // ->append([__DIR__.'/bin-entry-file'])
-            // 💡 folders to exclude, if any
-            // ->exclude([/* ... */])
-            // 💡 path patterns to exclude, if any
-            // ->notPath([/* ... */])
-            // 💡 extra configs
-            // ->ignoreDotFiles(false) // true by default in v3, false in v4 or future mode
-            // ->ignoreVCS(true) // true by default
-    )
-;
+$ruleSet = Config\RuleSet\Php82::create()->withRules(Config\Rules::fromArray([
+    'binary_operator_spaces' => [
+        'default'   => 'align',
+        'operators' => [
+            '=>' => 'align_single_space_by_scope',
+        ],
+    ],
+]));
+
+$finder = Finder::create()->in(__DIR__);
+
+$config = Config\Factory::fromRuleSet($ruleSet);
+
+$config->setCacheFile(__DIR__ . '/.build/php-cs-fixer/.php-cs-fixer.cache');
+$config->setFinder($finder);
+
+return $config;
