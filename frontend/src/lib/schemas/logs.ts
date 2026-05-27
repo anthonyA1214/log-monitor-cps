@@ -16,6 +16,25 @@ export const logInfoSchema = z.object({
   content: z.string(),
 })
 
+export const addLogSchema = logInfoSchema
+  .pick({
+    title: true,
+    fileName: true,
+    filePath: true,
+  })
+  .extend({
+    filePath: z
+      .string()
+      .min(1, "File path is required")
+      .refine((val) => val.split(/[\\/]/).pop()?.endsWith(".txt") ?? false, {
+        message: "Only .txt files are allowed",
+      }),
+  })
+
+export const addLogsSchema = z.object({
+  logs: z.array(addLogSchema),
+})
+
 export const updateLogInfoSchema = logInfoSchema
   .pick({
     title: true,
@@ -23,14 +42,15 @@ export const updateLogInfoSchema = logInfoSchema
     filePath: true,
   })
   .extend({
-    fileName: z.string().min(1, "File name is required"),
-    filePath: z.string().min(1, "File path is required"),
-  })
-  .refine((data) => data.fileName.endsWith(".txt"), {
-    message: "Only .txt files are allowed",
-    path: ["fileName"],
+    filePath: z
+      .string()
+      .min(1, "File path is required")
+      .refine((val) => val.split(/[\\/]/).pop()?.endsWith(".txt") ?? false, {
+        message: "Only .txt files are allowed",
+      }),
   })
 
 export type Log = z.infer<typeof logSchema>
 export type LogInfo = z.infer<typeof logInfoSchema>
 export type UpdateLogInfo = z.infer<typeof updateLogInfoSchema>
+export type AddLogs = z.infer<typeof addLogsSchema>

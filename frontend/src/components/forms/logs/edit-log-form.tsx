@@ -86,16 +86,16 @@ export default function EditLogForm({ data }: EditLogFormProps) {
         <Field data-invalid={!!errors.filePath}>
           <FieldLabel htmlFor="file-path">File Path</FieldLabel>
           <Input
-            {...register("filePath")}
+            {...register("filePath", {
+              onChange: (e) => {
+                const fileName = e.target.value.split(/[\\/]/).pop() || ""
+                setValue("fileName", fileName, { shouldDirty: false })
+              },
+            })}
             aria-invalid={!!errors.filePath}
             id="file-path"
             placeholder="e.g., /var/log/myapp.txt"
             type="text"
-            onChange={(e) => {
-              setValue("filePath", e.target.value, { shouldDirty: true })
-              const fileName = e.target.value.split(/[\\/]/).pop() || ""
-              setValue("fileName", fileName, { shouldDirty: true })
-            }}
           />
           <FieldDescription>
             The path to the log file (e.g., <code>/var/log/myapp.txt</code>).

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LogMonitor\Backend\Controller;
 
+use LogMonitor\Backend\Repository\LogRepository;
 use LogMonitor\Backend\Service\LogService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -12,8 +13,10 @@ use Respect\Validation\Validator as v;
 
 final class LogController
 {
-    public function __construct(private LogService $logService)
-    {
+    public function __construct(
+        private LogService $logService,
+        private LogRepository $logRepository,
+    ) {
     }
 
     public function index(Request $request, Response $response): Response
@@ -31,7 +34,8 @@ final class LogController
         $isBulk = isset($data[0]) && \is_array($data[0]);
         $items  = $isBulk ? $data : [$data];
 
-        $errors = [];
+        $errors    = [];
+        $seenPaths = [];
 
         foreach ($items as $index => $item) {
             try {
@@ -44,8 +48,20 @@ final class LogController
                 $errors[$index] = $e->getMessages();
             }
 
-            if (isset($item['file_path']) && !\file_exists($item['file_path'])) {
-                $errors[$index][] = 'File does not exist at the specified path';
+            if (isset($item['file_path'])) {
+                if (!\file_exists($item['file_path'])) {
+                    $errors[$index][] = 'File does not exist at the specified path';
+                }
+
+                if (\in_array($item['file_path'], $seenPaths, true)) {
+                    $errors[$index][] = 'Duplicate file path in request';
+                } else {
+                    $seenPaths[] = $item['file_path'];
+                }
+
+                if ($this->logRepository->filePathExists($item['file_path'])) {
+                    $errors[$index][] = 'File path already exists';
+                }
             }
         }
 
