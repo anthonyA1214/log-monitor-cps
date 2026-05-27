@@ -1,6 +1,6 @@
 import { env } from "@/env"
 import { queryOptions } from "@tanstack/react-query"
-import type { Log, LogInfo } from "../schemas/logs"
+import type { AddLogs, Log, LogInfo } from "../schemas/logs"
 
 type LogDTO = {
   id: string
@@ -58,6 +58,36 @@ async function fetchLogInfo(logId: string): Promise<LogInfo> {
   }
 }
 
+async function addLogs(data: AddLogs): Promise<Log[]> {
+  const res = await fetch(`${env.VITE_API_URL}/api/logs`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(
+      data.logs.map((log) => ({
+        title: log.title,
+        file_name: log.fileName,
+        file_path: log.filePath,
+      }))
+    ),
+  })
+
+  const result = await res.json()
+
+  if (!res.ok) {
+    throw result
+  }
+
+  const logsData: LogDTO[] = Array.isArray(result.logs) ? result.logs : [result.logs]
+  return logsData.map((log) => ({
+    id: log.id,
+    title: log.title,
+    fileName: log.file_name,
+    fileModifiedAt: log.file_modified_at,
+  }))
+}
+
 async function updateLogInfo(
   logId: string,
   info: Partial<LogInfo>
@@ -102,4 +132,4 @@ export const logsQueryOptions = {
     }),
 }
 
-export { syncLogs, updateLogInfo }
+export { syncLogs, updateLogInfo, addLogs }

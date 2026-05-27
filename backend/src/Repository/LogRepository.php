@@ -33,6 +33,16 @@ final class LogRepository
         ];
     }
 
+    public function filePathExists(string $filePath): bool
+    {
+        $sql = 'SELECT COUNT(*) FROM log_files WHERE file_path = :file_path';
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':file_path' => $filePath]);
+
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
     public function upsert(string $fileName, string $filePath, string $fileModifiedAt): void
     {
         $sql = <<<'EOD'
@@ -44,7 +54,8 @@ final class LogRepository
                 status = 'active'
         EOD;
 
-        $this->pdo->prepare($sql)->execute([
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
             ':file_name'        => $fileName,
             ':file_path'        => $filePath,
             ':file_modified_at' => $fileModifiedAt,
@@ -64,7 +75,8 @@ final class LogRepository
         // Mark files not in the active list as inactive
         $placeholders = \implode(',', \array_fill(0, \count($activeFiles), '?'));
         $sql          = "UPDATE log_files SET status = 'inactive' WHERE file_path NOT IN ({$placeholders})";
-        $this->pdo->prepare($sql)->execute($activeFiles);
+        $stmt         = $this->pdo->prepare($sql);
+        $stmt->execute($activeFiles);
     }
 
     public function deactivateOldLogs(): void
@@ -113,7 +125,8 @@ final class LogRepository
     {
         $sql = 'UPDATE log_files SET file_modified_at = :file_modified_at WHERE id = :id';
 
-        $this->pdo->prepare($sql)->execute([
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
             ':file_modified_at' => $fileModifiedAt,
             ':id'               => $id,
         ]);
@@ -121,8 +134,9 @@ final class LogRepository
 
     public function markInactiveById(int $id): void
     {
-        $sql = "UPDATE log_files SET status = 'inactive' WHERE id = :id";
-        $this->pdo->prepare($sql)->execute([
+        $sql  = "UPDATE log_files SET status = 'inactive' WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
             ':id' => $id,
         ]);
     }
@@ -141,7 +155,8 @@ final class LogRepository
     {
         $sql = 'UPDATE log_files SET title = :title, file_name = :file_name, file_path = :file_path WHERE id = :id';
 
-        $this->pdo->prepare($sql)->execute([
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
             ':title'     => $data['title'] ?? null,
             ':file_name' => $data['file_name'],
             ':file_path' => $data['file_path'],

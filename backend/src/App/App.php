@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use DI\Bridge\Slim\Bridge;
 use DI\Container;
 use LogMonitor\Backend\Middleware\CorsMiddleware;
-use DI\Bridge\Slim\Bridge;
 
 $baseDir = \dirname(__DIR__, 2);
 
@@ -24,7 +24,7 @@ $dotenv->required(['DB_HOST', 'DB_USER', 'DB_PASS', 'DB_NAME', 'DB_PORT']);
 \date_default_timezone_set(TIMEZONE);
 
 $container = new Container();
-$app = Bridge::create($container);
+$app       = Bridge::create($container);
 
 $app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
