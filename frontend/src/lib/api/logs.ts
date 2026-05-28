@@ -79,7 +79,9 @@ async function addLogs(data: AddLogs): Promise<Log[]> {
     throw result
   }
 
-  const logsData: LogDTO[] = Array.isArray(result.logs) ? result.logs : [result.logs]
+  const logsData: LogDTO[] = Array.isArray(result.logs)
+    ? result.logs
+    : [result.logs]
   return logsData.map((log) => ({
     id: log.id,
     title: log.title,
