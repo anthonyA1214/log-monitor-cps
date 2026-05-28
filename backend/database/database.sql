@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS `log_files` (
     `file_path` VARCHAR(500) NOT NULL,
     `file_modified_at` DATETIME NOT NULL,
     `status` ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+    `source` ENUM('sync', 'manual') NOT NULL DEFAULT 'sync',
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),

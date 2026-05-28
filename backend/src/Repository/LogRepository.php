@@ -13,8 +13,8 @@ final class LogRepository
     public function insert(?string $title, string $fileName, string $filePath, string $fileModifiedAt): array
     {
         $sql = <<<'EOD'
-            INSERT INTO log_files (title, file_name, file_path, file_modified_at, status)
-            VALUES (:title, :file_name, :file_path, :file_modified_at, 'active')
+            INSERT INTO log_files (title, file_name, file_path, file_modified_at, status, source)
+            VALUES (:title, :file_name, :file_path, :file_modified_at, 'active', 'manual')
         EOD;
 
         $stmt = $this->pdo->prepare($sql)->execute([
@@ -46,8 +46,8 @@ final class LogRepository
     public function upsert(string $fileName, string $filePath, string $fileModifiedAt): void
     {
         $sql = <<<'EOD'
-            INSERT INTO log_files (file_name, file_path, file_modified_at, status)
-            VALUES (:file_name, :file_path, :file_modified_at, 'active')
+            INSERT INTO log_files (file_name, file_path, file_modified_at, status, source)
+            VALUES (:file_name, :file_path, :file_modified_at, 'active', 'sync')
             ON DUPLICATE KEY UPDATE
                 file_name = VALUES(file_name),
                 file_modified_at = VALUES(file_modified_at),
@@ -66,7 +66,7 @@ final class LogRepository
     {
         if (empty($activeFiles)) {
             // If no active files, mark all as inactive
-            $sql = "UPDATE log_files SET status = 'inactive'";
+            $sql = "UPDATE log_files SET status = 'inactive' WHERE source = 'sync'";
             $this->pdo->exec($sql);
 
             return;
@@ -74,7 +74,7 @@ final class LogRepository
 
         // Mark files not in the active list as inactive
         $placeholders = \implode(',', \array_fill(0, \count($activeFiles), '?'));
-        $sql          = "UPDATE log_files SET status = 'inactive' WHERE file_path NOT IN ({$placeholders})";
+        $sql          = "UPDATE log_files SET status = 'inactive' WHERE file_path NOT IN ({$placeholders}) AND source = 'sync'";
         $stmt         = $this->pdo->prepare($sql);
         $stmt->execute($activeFiles);
     }
@@ -88,11 +88,12 @@ final class LogRepository
                         SUBSTRING_INDEX(file_name, '_log-', 1) AS prefix,
                         MAX(SUBSTRING_INDEX(SUBSTRING_INDEX(file_name, '_log-', -1), '.txt', 1)) AS latest_date
                     FROM log_files
-                    WHERE status = 'active'
+                    WHERE status = 'active' AND source = 'sync'
                     GROUP BY prefix
                 ) AS latest ON SUBSTRING_INDEX(lf.file_name, '_log-', 1) = latest.prefix
                 SET lf.status = 'inactive'
-                WHERE lf.status = 'active' AND SUBSTRING_INDEX(SUBSTRING_INDEX(lf.file_name, '_log-', -1), '.txt', 1) < latest.latest_date
+                WHERE lf.status = 'active' AND lf.source = 'sync'
+                AND SUBSTRING_INDEX(SUBSTRING_INDEX(lf.file_name, '_log-', -1), '.txt', 1) < latest.latest_date
         EOD;
 
         $this->pdo->exec($sql);
