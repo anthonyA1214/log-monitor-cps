@@ -15,6 +15,8 @@ import { settingsSchema, type Settings } from "@/lib/schemas/settings"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { settingsQueryOptions, updateSettings } from "@/lib/api/settings"
 import { toast } from "sonner"
+import { useNavigate } from "@tanstack/react-router"
+import { syncLogs } from "@/lib/api/logs"
 
 interface SettingsFormProps {
   data: Settings
@@ -23,12 +25,13 @@ interface SettingsFormProps {
 export default function SettingsForm({ data }: SettingsFormProps) {
   const queryClient = useQueryClient()
   const [isEditing, setIsEditing] = useState(false)
+  const navigate = useNavigate()
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<Settings>({
     resolver: zodResolver(settingsSchema),
     defaultValues: data,
@@ -38,12 +41,14 @@ export default function SettingsForm({ data }: SettingsFormProps) {
   const { mutate, isPending } = useMutation({
     mutationFn: updateSettings,
     onSuccess: (updatedSettings) => {
+      syncLogs()
       queryClient.setQueryData(
         settingsQueryOptions.all().queryKey,
         updatedSettings
       )
       setIsEditing(false)
       toast.success("Settings updated successfully")
+      navigate({ to: "/logs" })
     },
     onError: () => {
       toast.error("Failed to update settings")
@@ -71,7 +76,7 @@ export default function SettingsForm({ data }: SettingsFormProps) {
           <Button
             type="submit"
             onClick={handleSubmit(onSubmit)}
-            disabled={isPending}
+            disabled={isPending || !isDirty}
           >
             {isPending ? "Saving..." : "Save"}
           </Button>

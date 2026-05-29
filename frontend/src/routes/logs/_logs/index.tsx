@@ -1,23 +1,16 @@
-import AddLogDialog from "@/components/add-log-dialog"
 import { ContentLayout } from "@/components/admin-panel/content-layout"
 import { columns } from "@/components/columns"
 import { DataTable } from "@/components/data-table"
 import EditLogDialog from "@/components/edit-log-dialog"
-import { Button } from "@/components/ui/button"
 import { useMilitaryTime } from "@/hooks/use-military-time"
 import { logsQueryOptions, syncLogs } from "@/lib/api/logs"
 import { useLogsStore } from "@/store/logs-store"
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
-import { RefreshCw } from "lucide-react"
-import { toast } from "sonner"
 
 export const Route = createFileRoute("/logs/_logs/")({
   loader: ({ context: { queryClient } }) => {
+    syncLogs() // Sync logs on page load
     return queryClient.ensureQueryData(logsQueryOptions.all())
   },
   errorComponent: ({ error }) => (
@@ -29,25 +22,12 @@ export const Route = createFileRoute("/logs/_logs/")({
 })
 
 function LogsPage() {
-  const queryClient = useQueryClient()
   const time = useMilitaryTime()
   const { data = [] } = useSuspenseQuery({
     ...logsQueryOptions.all(),
     refetchInterval: 5000, // Refetch every 5 seconds
   })
   const { logId } = useLogsStore()
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: syncLogs,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: logsQueryOptions.all().queryKey,
-      })
-    },
-    onError: () => {
-      toast.error("Failed to sync logs")
-    },
-  })
 
   return (
     <ContentLayout>
@@ -62,18 +42,6 @@ function LogsPage() {
               <span className="font-mono text-sm text-muted-foreground">
                 {time}
               </span>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => mutate()}
-                disabled={isPending}
-              >
-                <RefreshCw className={isPending ? "animate-spin" : ""} />
-                {isPending ? "Syncing..." : "Sync Logs"}
-              </Button>
-
-              <AddLogDialog />
             </div>
           </div>
 

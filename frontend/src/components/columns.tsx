@@ -14,6 +14,7 @@ import type { Log } from "@/lib/schemas/logs"
 import { useLogsStore } from "@/store/logs-store"
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
 import { Edit } from "lucide-react"
+import { sourceColorMap } from "@/lib/color-map"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -65,6 +66,19 @@ export const columns: ColumnDef<Log>[] = [
         <Badge className={cn("text-sm", FILE_STATUS_STYLES[status])}>
           {FILE_STATUS_LABEL[status]} -{" "}
           {formatDistanceToNow(date, { addSuffix: true })}
+        </Badge>
+      )
+    },
+  },
+  {
+    accessorKey: "source",
+    header: "Source",
+    cell: ({ row }) => {
+      const source = row.original.source
+
+      return (
+        <Badge className={cn("text-sm capitalize", sourceColorMap[source])}>
+          {source}
         </Badge>
       )
     },
