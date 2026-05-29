@@ -144,7 +144,7 @@ final class LogRepository
 
     public function findById(int $id): ?array
     {
-        $sql = 'SELECT id, title, file_name, file_path, file_modified_at FROM log_files WHERE id = :id';
+        $sql = 'SELECT id, title, file_name, file_path, file_modified_at, source FROM log_files WHERE id = :id';
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([':id' => $id]);

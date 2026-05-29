@@ -63,7 +63,7 @@ final class LogService
                 $matched = false;
 
                 foreach ($commonPrefix as $prefix) {
-                    if (\str_starts_with($fileName, $prefix)) {
+                    if (\str_starts_with($fileName, $prefix . '_log-')) {
                         $matched = true;
 
                         break;
@@ -135,6 +135,7 @@ final class LogService
             'file_name'        => $log['file_name'],
             'file_path'        => $log['file_path'],
             'file_modified_at' => \date('c', \filemtime($filePath)),
+            'source'           => $log['source'],
             'content'          => $content,
         ];
     }

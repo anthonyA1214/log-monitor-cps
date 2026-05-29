@@ -12,6 +12,7 @@ import {
 import { format, formatDistanceToNow } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { sourceColorMap } from "@/lib/color-map"
 
 export const Route = createFileRoute("/logs/_logs/$logId")({
   loader: async ({ context: { queryClient }, params: { logId } }) => {
@@ -46,10 +47,21 @@ function LogsInfoPage() {
             </div>
 
             {/* Status badge */}
-            <Badge className={cn("text-sm", FILE_STATUS_STYLES[status])}>
-              {FILE_STATUS_LABEL[status]} -{" "}
-              {formatDistanceToNow(date, { addSuffix: true })}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge className={cn("text-sm", FILE_STATUS_STYLES[status])}>
+                {FILE_STATUS_LABEL[status]} -{" "}
+                {formatDistanceToNow(date, { addSuffix: true })}
+              </Badge>
+
+              <Badge
+                className={cn(
+                  "text-sm capitalize",
+                  sourceColorMap[data.source]
+                )}
+              >
+                {data.source}
+              </Badge>
+            </div>
           </div>
 
           {/* Meta row */}
