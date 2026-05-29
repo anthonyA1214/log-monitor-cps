@@ -8,7 +8,7 @@ import { useLogsStore } from "@/store/logs-store"
 import { logsQueryOptions } from "@/lib/api/logs"
 import { useQuery } from "@tanstack/react-query"
 import EditLogForm from "./forms/logs/edit-log-form"
-import { Spinner } from "./ui/spinner"
+import EditLogFormSkeleton from "./skeletons/edit-log-form-skeleton"
 
 export default function EditLogDialog() {
   const { logId, open, closeDialog } = useLogsStore()
@@ -21,7 +21,7 @@ export default function EditLogDialog() {
           <DialogTitle>Edit Log</DialogTitle>
         </DialogHeader>
 
-        {isLoading || !data ? <Spinner /> : <EditLogForm data={data} />}
+        {isLoading || !data ? <EditLogFormSkeleton /> : <EditLogForm data={data} />}
       </DialogContent>
     </Dialog>
   )
