@@ -34,7 +34,10 @@ export default function SettingsForm({ data }: SettingsFormProps) {
     formState: { errors, isDirty },
   } = useForm<Settings>({
     resolver: zodResolver(settingsSchema),
-    defaultValues: data,
+    defaultValues: {
+      ...data,
+      commonPrefix: Array.isArray(data.commonPrefix) ? data.commonPrefix.join(", ") : data.commonPrefix ?? "",
+    },
     mode: "onTouched",
   })
 
@@ -95,7 +98,6 @@ export default function SettingsForm({ data }: SettingsFormProps) {
             aria-invalid={!!errors.logsDirectory}
             id="absolute-path"
             placeholder="e.g., /var/log/myapp"
-            defaultValue={data.logsDirectory}
             disabled={!isEditing}
           />
           <FieldDescription>
