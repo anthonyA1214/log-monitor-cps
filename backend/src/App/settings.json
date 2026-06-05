@@ -1,11 +1,7 @@
 {
-    "logs_directory": "C:\\Users\\Anton\\Desktop\\logs",
+    "logs_directory": "\\\\192.168.0.204\\logger",
     "common_prefix": [
-        "asd",
-        "test",
-        "imh",
-        "omega",
-        "ncm",
-        "outlook"
+        "API_LOGGER",
+        "wm"
     ]
 }
