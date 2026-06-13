@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
-type DashRingProps = React.ComponentProps<"svg">;
+type DashRingProps = React.ComponentProps<"svg">
 
 function DashRing({ className, ...props }: DashRingProps) {
   return (
@@ -46,7 +46,7 @@ function DashRing({ className, ...props }: DashRingProps) {
         />
       </circle>
     </svg>
-  );
+  )
 }
 
-export { DashRing };
+export { DashRing }
