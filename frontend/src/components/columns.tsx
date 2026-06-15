@@ -1,20 +1,15 @@
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
-import { format, formatDistanceToNow } from "date-fns"
-import {
-  FILE_STATUS_LABEL,
-  FILE_STATUS_STYLES,
-  getTimeStatus,
-} from "@/lib/file-status"
+import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Link } from "@tanstack/react-router"
 import { Badge } from "./ui/badge"
 import type { Log } from "@/lib/schemas/logs"
+import { fileStatusColorMap, sourceColorMap } from "@/lib/color-map"
 import { useLogsStore } from "@/store/logs-store"
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
 import { Edit } from "lucide-react"
-import { sourceColorMap } from "@/lib/color-map"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -59,13 +54,11 @@ export const columns: ColumnDef<Log>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const date = new Date(row.original.fileModifiedAt)
-      const status = getTimeStatus(date)
+      const status = row.original.status
 
       return (
-        <Badge className={cn("text-sm", FILE_STATUS_STYLES[status])}>
-          {FILE_STATUS_LABEL[status]} -{" "}
-          {formatDistanceToNow(date, { addSuffix: true })}
+        <Badge className={cn("text-sm capitalize", fileStatusColorMap[status])}>
+          {status}
         </Badge>
       )
     },

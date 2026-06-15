@@ -6,16 +6,12 @@ export const logSchema = z.object({
   fileName: z.string(),
   fileModifiedAt: z.string(),
   source: z.enum(["sync", "manual"]),
+  status: z.string()
 })
 
-export const logInfoSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  fileName: z.string(),
+export const logInfoSchema = logSchema.extend({
   filePath: z.string(),
-  fileModifiedAt: z.string(),
-  source: z.enum(["sync", "manual"]),
-  content: z.string(),
+  content: z.string()
 })
 
 export const addLogSchema = logInfoSchema

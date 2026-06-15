@@ -8,6 +8,7 @@ type LogDTO = {
   file_name: string
   file_modified_at: string
   source: "sync" | "manual"
+  status: "active" | "inactive"
 }
 
 type LogInfoDTO = {
@@ -17,6 +18,7 @@ type LogInfoDTO = {
   file_path: string
   file_modified_at: string
   source: "sync" | "manual"
+  status: "active" | "inactive"
   content: string
 }
 
@@ -42,6 +44,7 @@ async function fetchLogs(): Promise<Log[]> {
     fileName: log.file_name,
     fileModifiedAt: log.file_modified_at,
     source: log.source,
+    status: log.status
   }))
 }
 
@@ -58,6 +61,7 @@ async function fetchLogInfo(logId: string): Promise<LogInfo> {
     filePath: data.file_path,
     fileModifiedAt: data.file_modified_at,
     source: data.source,
+    status: data.status,
     content: data.content,
   }
 }
@@ -92,6 +96,7 @@ async function addLogs(data: AddLogs): Promise<Log[]> {
     fileName: log.file_name,
     fileModifiedAt: log.file_modified_at,
     source: log.source,
+    status: log.status
   }))
 }
 
@@ -123,6 +128,7 @@ async function updateLogInfo(
     fileModifiedAt: data.file_modified_at,
     content: data.content,
     source: data.source,
+    status: data.status
   }
 }
 

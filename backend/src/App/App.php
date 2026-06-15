@@ -27,11 +27,13 @@ $container = new Container();
 $app       = Bridge::create($container);
 
 $app->addBodyParsingMiddleware();
+
+(require __DIR__ . '/Dependencies.php')($app);
+(require __DIR__ . '/Routes.php')($app);
+
 $app->addRoutingMiddleware();
 $app->addErrorMiddleware(true, true, true);
 $app->add(new CorsMiddleware($app->getResponseFactory()));
 
-(require __DIR__ . '/Dependencies.php')($app);
-(require __DIR__ . '/Routes.php')($app);
 
 return $app;

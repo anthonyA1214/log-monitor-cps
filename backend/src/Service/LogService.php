@@ -58,7 +58,6 @@ final class LogService
             // if (!self::isValidLogFile($fileName)) {
             //     continue; // Skip files that don't match the expected pattern
             // }
-            error_log("Processing file: $fileName");
 
             if (!empty($commonPrefix)) {
                 $matched = false;
@@ -137,6 +136,7 @@ final class LogService
             'file_path'        => $log['file_path'],
             'file_modified_at' => \date('c', \filemtime($filePath)),
             'source'           => $log['source'],
+            'status'           => $log['status'],
             'content'          => $content,
         ];
     }

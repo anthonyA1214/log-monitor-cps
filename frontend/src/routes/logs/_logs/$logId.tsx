@@ -4,15 +4,10 @@ import { createFileRoute, Link } from "@tanstack/react-router"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import {
-  FILE_STATUS_LABEL,
-  FILE_STATUS_STYLES,
-  getTimeStatus,
-} from "@/lib/file-status"
-import { format, formatDistanceToNow } from "date-fns"
+import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { sourceColorMap } from "@/lib/color-map"
+import { fileStatusColorMap, sourceColorMap } from "@/lib/color-map"
 
 export const Route = createFileRoute("/logs/_logs/$logId")({
   loader: async ({ context: { queryClient }, params: { logId } }) => {
@@ -27,7 +22,6 @@ function LogsInfoPage() {
   const { data } = useSuspenseQuery(logsQueryOptions.info(logId))
 
   const date = new Date(data.fileModifiedAt)
-  const status = getTimeStatus(date)
 
   return (
     <ContentLayout>
@@ -48,9 +42,8 @@ function LogsInfoPage() {
 
             {/* Status badge */}
             <div className="flex items-center gap-2">
-              <Badge className={cn("text-sm", FILE_STATUS_STYLES[status])}>
-                {FILE_STATUS_LABEL[status]} -{" "}
-                {formatDistanceToNow(date, { addSuffix: true })}
+              <Badge className={cn("text-sm capitalize", fileStatusColorMap[data.status])}>
+                {data.status}
               </Badge>
 
               <Badge
