@@ -6,6 +6,7 @@ import {
   // SquarePen,
   type LucideIcon,
   ScrollText,
+  LayoutDashboard,
 } from "lucide-react"
 
 type Submenu = {
@@ -34,6 +35,13 @@ export function getMenuList(pathname: string): Group[] {
     {
       groupLabel: "",
       menus: [
+        {
+          id: "dashboard",
+          href: "/dashboard",
+          label: "Dashboard",
+          icon: LayoutDashboard,
+          submenus: [],
+        },
         {
           id: "logs",
           href: "/logs",

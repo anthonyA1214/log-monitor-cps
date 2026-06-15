@@ -21,7 +21,11 @@ export default function EditLogDialog() {
           <DialogTitle>Edit Log</DialogTitle>
         </DialogHeader>
 
-        {isLoading || !data ? <EditLogFormSkeleton /> : <EditLogForm data={data} />}
+        {isLoading || !data ? (
+          <EditLogFormSkeleton />
+        ) : (
+          <EditLogForm data={data} />
+        )}
       </DialogContent>
     </Dialog>
   )

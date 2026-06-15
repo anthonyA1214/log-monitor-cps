@@ -36,7 +36,9 @@ export default function SettingsForm({ data }: SettingsFormProps) {
     resolver: zodResolver(settingsSchema),
     defaultValues: {
       ...data,
-      commonPrefix: Array.isArray(data.commonPrefix) ? data.commonPrefix.join(", ") : data.commonPrefix ?? "",
+      commonPrefix: Array.isArray(data.commonPrefix)
+        ? data.commonPrefix.join(", ")
+        : (data.commonPrefix ?? ""),
     },
     mode: "onTouched",
   })
