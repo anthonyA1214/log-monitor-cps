@@ -54,10 +54,9 @@ final class LogService
 
         foreach ($files as $file) {
             $fileName = \basename($file);
-
-            // if (!self::isValidLogFile($fileName)) {
-            //     continue; // Skip files that don't match the expected pattern
-            // }
+            if (!self::isValidLogFile($fileName)) {
+                continue; // Skip files that don't match the expected pattern
+            }
 
             if (!empty($commonPrefix)) {
                 $matched = false;
@@ -90,7 +89,6 @@ final class LogService
     {
         $logs   = $this->logRepository->findCurrentLogs();
         $result = [];
-
         foreach ($logs as $log) {
             $filePath = $log['file_path'];
 
@@ -155,8 +153,8 @@ final class LogService
         return $this->getLogInfo($logId);
     }
 
-    // private static function isValidLogFile(string $fileName): bool
-    // {
-    //     return (bool) \preg_match('/^[a-zA-Z]+_log-\d{4}-\d{2}-\d{2}\.txt$/', $fileName);
-    // }
+    private static function isValidLogFile(string $fileName): bool
+    {
+        return (bool) \preg_match('/^.+_\d{8}\.txt$/', $fileName);
+    }
 }

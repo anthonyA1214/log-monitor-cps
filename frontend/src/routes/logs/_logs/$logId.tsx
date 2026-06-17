@@ -70,7 +70,7 @@ function LogsInfoPage() {
           </div>
 
           {/* Log content */}
-          <div className="no-scrollbar flex-1 overflow-y-auto">
+          <div className="scrollbar-thin flex-1 overflow-y-auto">
             {data.content ? (
               <pre className="h-full p-4 font-mono text-xs leading-5 break-all whitespace-pre-wrap text-foreground">
                 {data.content}

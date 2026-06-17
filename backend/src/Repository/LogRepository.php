@@ -81,45 +81,84 @@ final class LogRepository
 
     public function deactivateOldLogs(): void
     {
-        $sql = <<<'EOD'
-                UPDATE log_files lf
-                INNER JOIN (
-                    SELECT
-                        SUBSTRING_INDEX(file_name, '_log-', 1) AS prefix,
-                        MAX(SUBSTRING_INDEX(SUBSTRING_INDEX(file_name, '_log-', -1), '.txt', 1)) AS latest_date
-                    FROM log_files
-                    WHERE status = 'active' AND source = 'sync'
-                    GROUP BY prefix
-                ) AS latest ON SUBSTRING_INDEX(lf.file_name, '_log-', 1) = latest.prefix
-                SET lf.status = 'inactive'
-                WHERE lf.status = 'active' AND lf.source = 'sync'
-                AND SUBSTRING_INDEX(SUBSTRING_INDEX(lf.file_name, '_log-', -1), '.txt', 1) < latest.latest_date
-        EOD;
+        $sql = "SELECT id, file_name FROM log_files WHERE source = 'sync' AND status = 'active'";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
 
-        $this->pdo->exec($sql);
+        $rows = $stmt->fetchAll();
+
+        $grouped = [];
+        foreach ($rows as $row) {
+            $cleaned = preg_replace('/-\d{4}-\d{2}-\d{2}/', '', $row['file_name']);
+
+            if (preg_match('/^(.+)_(\d{8})\.txt$/', $cleaned, $matches)) {
+                $prefix = $matches[1];
+                $date = $matches[2];
+                $grouped[$prefix][] = [
+                    'id' => $row['id'],
+                    'date' => $date
+                ];
+            }
+        }
+
+        $idsToDeactivate = [];
+        foreach ($grouped as $prefix => $entries) {
+            $latestDate = max(array_column($entries, 'date'));
+
+            foreach ($entries as $entry) {
+                if ($entry['date'] < $latestDate) {
+                    $idsToDeactivate[] = $entry['id'];
+                }
+            }
+        }
+
+        if(empty($idsToDeactivate)) {
+            return;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($idsToDeactivate), '?'));
+        $sql = "UPDATE log_files SET status = 'inactive' WHERE id IN ($placeholders)";
+        $update = $this->pdo->prepare($sql);
+        $update->execute($idsToDeactivate);
     }
 
     public function findCurrentLogs(): array
     {
-        $sql = <<<'EOD'
-                SELECT lf.* FROM log_files lf
-                INNER JOIN (
-                    SELECT
-                        SUBSTRING_INDEX(file_name, '_log-', 1) AS prefix,
-                        MAX(CASE
-                            WHEN DATE(file_modified_at) = CURDATE() THEN file_modified_at
-                            ELSE NULL
-                        END) AS today_modified_at,
-                        MAX(file_modified_at) AS latest_modified_at
-                    FROM log_files
-                    WHERE status = 'active'
-                    GROUP BY prefix
-                ) AS latest ON SUBSTRING_INDEX(lf.file_name, '_log-', 1) = latest.prefix
-                AND lf.file_modified_at = COALESCE(latest.today_modified_at, latest.latest_modified_at)
-                WHERE lf.status = 'active'
-        EOD;
+        $sql = "SELECT * FROM log_files WHERE status = 'active' AND source = 'sync'";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
 
-        return $this->pdo->query($sql)->fetchAll();
+        $rows = $stmt->fetchAll();
+        $grouped = [];
+
+        foreach ($rows as $row) {
+            $cleaned = preg_replace('/-\d{4}-\d{2}-\d{2}/', '', $row['file_name']);
+
+            if (preg_match('/^(.+)_(\d{8})\.txt$/', $cleaned, $matches)) {
+                $prefix = $matches[1];
+
+                $grouped[$prefix][] = $row;
+            }
+        }
+
+        $today = date('Y-m-d');
+        $currentLogs = [];
+
+        foreach($grouped as $prefix => $entries) {
+            $todaysEntries = array_filter($entries, function($entry) use ($today) {
+                return substr($entry['file_modified_at'], 0, 10) === $today;
+            });
+
+            if (!empty($todaysEntries)) {
+                usort($todaysEntries, fn($a, $b) => strcmp($b['file_modified_at'], $a['file_modified_at']));
+                $currentLogs[] = $todaysEntries[array_key_first($todaysEntries)];
+            } else {
+                usort($entries, fn($a, $b) => strcmp($b['file_modified_at'], $a['file_modified_at']));
+                $currentLogs[] = $entries[array_key_first($entries)]; 
+            }
+        }
+
+        return $currentLogs;
     }
 
     public function updateModifiedAt(int $id, string $fileModifiedAt): void
