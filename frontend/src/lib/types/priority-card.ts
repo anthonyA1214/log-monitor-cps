@@ -3,5 +3,6 @@ export type PriorityCard = {
   fetching: string
   fetchingBGColor: string
   color: string
-  lastRun?: null
+  lastRun?: Date
+  fileSize: string
 }

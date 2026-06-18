@@ -44,7 +44,7 @@ async function fetchLogs(): Promise<Log[]> {
     fileName: log.file_name,
     fileModifiedAt: log.file_modified_at,
     source: log.source,
-    status: log.status
+    status: log.status,
   }))
 }
 
@@ -96,7 +96,7 @@ async function addLogs(data: AddLogs): Promise<Log[]> {
     fileName: log.file_name,
     fileModifiedAt: log.file_modified_at,
     source: log.source,
-    status: log.status
+    status: log.status,
   }))
 }
 
@@ -128,7 +128,7 @@ async function updateLogInfo(
     fileModifiedAt: data.file_modified_at,
     content: data.content,
     source: data.source,
-    status: data.status
+    status: data.status,
   }
 }
 

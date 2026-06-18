@@ -42,7 +42,12 @@ function LogsInfoPage() {
 
             {/* Status badge */}
             <div className="flex items-center gap-2">
-              <Badge className={cn("text-sm capitalize", fileStatusColorMap[data.status])}>
+              <Badge
+                className={cn(
+                  "text-sm capitalize",
+                  fileStatusColorMap[data.status]
+                )}
+              >
                 {data.status}
               </Badge>
 

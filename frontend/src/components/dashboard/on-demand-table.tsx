@@ -1,6 +1,6 @@
-import type { OnDemandSideTable } from "@/lib/types/on-demand-side-table";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Table, TableBody, TableCell, TableRow } from "../ui/table";
+import type { OnDemandSideTable } from "@/lib/types/on-demand-side-table"
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
+import { Table, TableBody, TableCell, TableRow } from "../ui/table"
 
 const onDemandSideTable: OnDemandSideTable[] = [
   { title: "Artrade", lastRun: null },

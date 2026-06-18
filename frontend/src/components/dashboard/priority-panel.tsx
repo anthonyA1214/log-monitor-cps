@@ -1,37 +1,41 @@
-import type { PriorityCard } from "@/lib/types/priority-card";
-import JobCard from "./job-card";
+import type { PriorityCard } from "@/lib/types/priority-card"
+import JobCard from "./job-card"
 
+const dateNow = new Date()
 const priorityCards: PriorityCard[] = [
   {
     cardTitle: "Automatic Aired",
     fetching: "Daily",
     fetchingBGColor: "#FFFFFF",
     color: "#22c55e",
-    lastRun: null,
+    lastRun: dateNow,
+    fileSize: "File Size: " + "22",
   },
   {
     cardTitle: "Win Media Schedule",
     fetching: "Daily",
     fetchingBGColor: "#FFFFFF",
     color: "#22c55e",
-    lastRun: null,
+    lastRun: dateNow,
+    fileSize: "File Size: " + "22",
   },
   {
     cardTitle: "SV Sync",
     fetching: "Daily",
     fetchingBGColor: "#FFFFFF",
     color: "#22c55e",
-    lastRun: null,
+    lastRun: dateNow,
+    fileSize: "File Size: " + "22",
   },
   {
     cardTitle: "OR Sync",
     fetching: "Recursive",
     fetchingBGColor: "#FFFFFF",
     color: "#f97316",
-    lastRun: null,
+    lastRun: dateNow,
+    fileSize: "File Size: " + "22",
   },
 ]
-
 
 export default function PriorityPanel() {
   return (
