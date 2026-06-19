@@ -5,5 +5,5 @@ export const sourceColorMap: Record<string, string> = {
 
 export const fileStatusColorMap: Record<string, string> = {
   active: "bg-green-100 text-green-800",
-  inactive: "bg-gray-100 text-gray-500"
+  inactive: "bg-gray-100 text-gray-500",
 }

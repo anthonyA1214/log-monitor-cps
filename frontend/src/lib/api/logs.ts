@@ -9,6 +9,7 @@ type LogDTO = {
   file_modified_at: string
   source: "sync" | "manual"
   status: "active" | "inactive"
+  children?: LogDTO[]
 }
 
 type LogInfoDTO = {
@@ -19,7 +20,6 @@ type LogInfoDTO = {
   file_modified_at: string
   source: "sync" | "manual"
   status: "active" | "inactive"
-  content: string
 }
 
 async function syncLogs(): Promise<void> {
@@ -44,7 +44,15 @@ async function fetchLogs(): Promise<Log[]> {
     fileName: log.file_name,
     fileModifiedAt: log.file_modified_at,
     source: log.source,
-    status: log.status
+    status: log.status,
+    children: log.children?.map((child) => ({
+      id: child.id,
+      title: child.title,
+      fileName: child.file_name,
+      fileModifiedAt: child.file_modified_at,
+      source: child.source,
+      status: child.status,
+    })) ?? [],
   }))
 }
 
@@ -62,7 +70,6 @@ async function fetchLogInfo(logId: string): Promise<LogInfo> {
     fileModifiedAt: data.file_modified_at,
     source: data.source,
     status: data.status,
-    content: data.content,
   }
 }
 
@@ -96,7 +103,15 @@ async function addLogs(data: AddLogs): Promise<Log[]> {
     fileName: log.file_name,
     fileModifiedAt: log.file_modified_at,
     source: log.source,
-    status: log.status
+    status: log.status,
+    children: log.children?.map((child) => ({
+      id: child.id,
+      title: child.title,
+      fileName: child.file_name,
+      fileModifiedAt: child.file_modified_at,
+      source: child.source,
+      status: child.status,
+    })) ?? [],
   }))
 }
 
@@ -126,9 +141,8 @@ async function updateLogInfo(
     fileName: data.file_name,
     filePath: data.file_path,
     fileModifiedAt: data.file_modified_at,
-    content: data.content,
     source: data.source,
-    status: data.status
+    status: data.status,
   }
 }
 

@@ -1,5 +1,5 @@
-import type { PriorityCard } from "@/lib/types/priority-card";
-import JobCard from "./job-card";
+import type { PriorityCard } from "@/lib/types/priority-card"
+import JobCard from "./job-card"
 
 const lessPriorityCards: PriorityCard[] = [
   {

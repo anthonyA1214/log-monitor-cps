@@ -1,5 +1,5 @@
-import type { PriorityCard } from "@/lib/types/priority-card";
-import JobCard from "./job-card";
+import type { PriorityCard } from "@/lib/types/priority-card"
+import JobCard from "./job-card"
 
 const priorityCards: PriorityCard[] = [
   {
@@ -31,7 +31,6 @@ const priorityCards: PriorityCard[] = [
     lastRun: null,
   },
 ]
-
 
 export default function PriorityPanel() {
   return (

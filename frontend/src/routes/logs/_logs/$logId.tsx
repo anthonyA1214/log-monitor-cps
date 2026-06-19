@@ -42,7 +42,12 @@ function LogsInfoPage() {
 
             {/* Status badge */}
             <div className="flex items-center gap-2">
-              <Badge className={cn("text-sm capitalize", fileStatusColorMap[data.status])}>
+              <Badge
+                className={cn(
+                  "text-sm capitalize",
+                  fileStatusColorMap[data.status]
+                )}
+              >
                 {data.status}
               </Badge>
 
@@ -71,15 +76,15 @@ function LogsInfoPage() {
 
           {/* Log content */}
           <div className="scrollbar-thin flex-1 overflow-y-auto">
-            {data.content ? (
-              <pre className="h-full p-4 font-mono text-xs leading-5 break-all whitespace-pre-wrap text-foreground">
-                {data.content}
-              </pre>
-            ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-2 py-16 text-muted-foreground">
-                <p className="text-sm">No content</p>
-              </div>
-            )}
+            {/* {data.content ? ( */}
+            {/*   <pre className="h-full p-4 font-mono text-xs leading-5 break-all whitespace-pre-wrap text-foreground"> */}
+            {/*     {data.content} */}
+            {/*   </pre> */}
+            {/* ) : ( */}
+            {/*   <div className="flex h-full flex-col items-center justify-center gap-2 py-16 text-muted-foreground"> */}
+            {/*     <p className="text-sm">No content</p> */}
+            {/*   </div> */}
+            {/* )} */}
           </div>
           {/*  */}
         </div>

@@ -1,7 +1,5 @@
-import type { PriorityCard } from "@/lib/types/priority-card";
-import { Card, CardTitle } from "../ui/card";
-
-
+import type { PriorityCard } from "@/lib/types/priority-card"
+import { Card, CardTitle } from "../ui/card"
 
 export default function JobCard({
   cardTitle,

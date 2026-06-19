@@ -54,6 +54,7 @@ final class LogService
 
         foreach ($files as $file) {
             $fileName = \basename($file);
+
             if (!self::isValidLogFile($fileName)) {
                 continue; // Skip files that don't match the expected pattern
             }
@@ -89,6 +90,7 @@ final class LogService
     {
         $logs   = $this->logRepository->findCurrentLogs();
         $result = [];
+
         foreach ($logs as $log) {
             $filePath = $log['file_path'];
 
@@ -125,8 +127,6 @@ final class LogService
             return null;
         }
 
-        $content = \file_get_contents($filePath);
-
         return [
             'id'               => $log['id'],
             'title'            => $log['title'],
@@ -135,7 +135,6 @@ final class LogService
             'file_modified_at' => \date('c', \filemtime($filePath)),
             'source'           => $log['source'],
             'status'           => $log['status'],
-            'content'          => $content,
         ];
     }
 

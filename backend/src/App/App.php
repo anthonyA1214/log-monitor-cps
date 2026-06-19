@@ -35,5 +35,4 @@ $app->addRoutingMiddleware();
 $app->addErrorMiddleware(true, true, true);
 $app->add(new CorsMiddleware($app->getResponseFactory()));
 
-
 return $app;

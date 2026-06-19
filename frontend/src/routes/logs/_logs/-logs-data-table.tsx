@@ -4,6 +4,7 @@ import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
+  getExpandedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
 
@@ -15,24 +16,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { useState } from "react"
+import type { Log } from "@/lib/schemas/logs"
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+interface DataTableProps {
+  columns: ColumnDef<Log>[]
+  data: Log[]
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
+type ExpandedState = true | Record<string, boolean>
+
+export function DataTable({ columns, data }: DataTableProps) {
+  const [expanded, setExpanded] = useState<ExpandedState>({})
+
   const table = useReactTable({
     data,
     columns,
+    getSubRows: (row) => row.children,
     getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    state: {
+      expanded: expanded,
+    },
+    onExpandedChange: setExpanded,
   })
 
   return (
-    <div className="scrollbar-hidden overflow-y-auto rounded-md border">
+    <div className="scrollbar-thin overflow-y-auto rounded-md border">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
