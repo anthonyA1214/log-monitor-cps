@@ -107,6 +107,20 @@ final class LogController
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    public function getContent(Request $request, Response $response, string $logId): Response
+    {
+        $result = $this->logService->getLogContent($logId);
+
+        if (null === $result) {
+            $response->getBody()->write(\json_encode(['error' => 'Log not found']));
+
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
+
+        $response->getBody()->write(\json_encode($result));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
     public function update(Request $request, Response $response, string $logId): Response
     {
         $data  = $request->getParsedBody();

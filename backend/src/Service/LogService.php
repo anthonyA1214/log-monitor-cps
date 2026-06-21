@@ -114,15 +114,12 @@ final class LogService
 
     public function getLogInfo(string $logId): ?array
     {
-        // Implementation for getting log info by log ID
         $log = $this->logRepository->findById((int) $logId);
-
         if (!$log) {
             return null;
         }
 
         $filePath = $log['file_path'];
-
         if (!\file_exists($filePath)) {
             return null;
         }
@@ -135,6 +132,38 @@ final class LogService
             'file_modified_at' => \date('c', \filemtime($filePath)),
             'source'           => $log['source'],
             'status'           => $log['status'],
+        ];
+    }
+
+    public function getLogContent(string $logId): ?array
+    {
+        $log = $this->logRepository->findById((int) $logId);
+        if (!$log) {
+            return null;
+        }
+
+        $filePath = $log['file_path'];
+        if (!\file_exists($filePath)) {
+            return null;
+        }
+
+        $fileSize = filesize($filePath);
+        $offset = max(0, $fileSize - CHUNK_SIZE);
+
+        $handle = fopen($filePath, 'rb');
+
+        if (!$handle) {
+            return null;
+        }
+
+        fseek($handle, $offset);
+        $content = fread($handle, CHUNK_SIZE);
+        fclose($handle);
+
+        return [
+            'content' => $content,
+            'next_offset' => $offset > 0 ? $offset : null,
+            'has_more' => $offset > 0,
         ];
     }
 
