@@ -1,5 +1,6 @@
 import type { PriorityCard } from "@/lib/types/priority-card"
 import { Card, CardTitle } from "../ui/card"
+import { format } from "date-fns"
 
 export default function JobCard({
   cardTitle,
@@ -7,6 +8,7 @@ export default function JobCard({
   fetchingBGColor,
   color,
   lastRun,
+  fileSize,
 }: PriorityCard) {
   return (
     <Card className="flex flex-col gap-2 rounded-xl border p-4">
@@ -26,7 +28,13 @@ export default function JobCard({
         {cardTitle}
       </CardTitle>
       {lastRun && (
-        <span className="mt-auto text-[10px] text-black/35">{lastRun}</span>
+        <div className="flex w-full flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+          <span className="text-[10px] text-black">
+            {format(lastRun, "yyyy-MM-dd")}
+          </span>
+
+          <span className="text-[10px] text-black/50">{fileSize}</span>
+        </div>
       )}
     </Card>
   )

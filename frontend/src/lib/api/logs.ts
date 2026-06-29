@@ -23,10 +23,10 @@ type LogInfoDTO = {
 }
 
 type LogContentDTO = {
-  content: string;
-  offset: number;
-  next_offset: number;
-  has_more: boolean;
+  content: string
+  offset: number
+  next_offset: number
+  has_more: boolean
 }
 
 async function syncLogs(): Promise<void> {
@@ -52,14 +52,15 @@ async function fetchLogs(): Promise<Log[]> {
     fileModifiedAt: log.file_modified_at,
     source: log.source,
     status: log.status,
-    children: log.children?.map((child) => ({
-      id: child.id,
-      title: child.title,
-      fileName: child.file_name,
-      fileModifiedAt: child.file_modified_at,
-      source: child.source,
-      status: child.status,
-    })) ?? [],
+    children:
+      log.children?.map((child) => ({
+        id: child.id,
+        title: child.title,
+        fileName: child.file_name,
+        fileModifiedAt: child.file_modified_at,
+        source: child.source,
+        status: child.status,
+      })) ?? [],
   }))
 }
 
@@ -80,7 +81,10 @@ async function fetchLogInfo(logId: string): Promise<LogInfo> {
   }
 }
 
-async function fetchLogContent(logId: string, offset?: number): Promise<LogContent> {
+async function fetchLogContent(
+  logId: string,
+  offset?: number
+): Promise<LogContent> {
   const url = new URL(`${env.VITE_API_URL}/api/logs/${logId}/content`)
   if (offset !== undefined) {
     url.searchParams.set("offset", String(offset))
@@ -88,7 +92,7 @@ async function fetchLogContent(logId: string, offset?: number): Promise<LogConte
 
   const res = await fetch(url.toString())
   if (!res.ok) {
-    throw new Error(`Failed to fetch log content for ${logId}`);
+    throw new Error(`Failed to fetch log content for ${logId}`)
   }
 
   const data: LogContentDTO = await res.json()
@@ -131,14 +135,15 @@ async function addLogs(data: AddLogs): Promise<Log[]> {
     fileModifiedAt: log.file_modified_at,
     source: log.source,
     status: log.status,
-    children: log.children?.map((child) => ({
-      id: child.id,
-      title: child.title,
-      fileName: child.file_name,
-      fileModifiedAt: child.file_modified_at,
-      source: child.source,
-      status: child.status,
-    })) ?? [],
+    children:
+      log.children?.map((child) => ({
+        id: child.id,
+        title: child.title,
+        fileName: child.file_name,
+        fileModifiedAt: child.file_modified_at,
+        source: child.source,
+        status: child.status,
+      })) ?? [],
   }))
 }
 
@@ -192,10 +197,11 @@ export const logsQueryOptions = {
       queryFn: ({ pageParam }: { pageParam: number | undefined }) =>
         fetchLogContent(logId, pageParam),
       initialPageParam: undefined as number | undefined,
-      getNextPageParam: (last) =>
-        last.hasMore ? last.nextOffset : undefined,
+      getNextPageParam: (last) => (last.hasMore ? last.nextOffset : undefined),
       getPreviousPageParam: (first) =>
-        first.offset > 0 ? Math.max(0, first.offset - 10 * 1024 * 1024) : undefined,
+        first.offset > 0
+          ? Math.max(0, first.offset - 10 * 1024 * 1024)
+          : undefined,
     }),
 }
 

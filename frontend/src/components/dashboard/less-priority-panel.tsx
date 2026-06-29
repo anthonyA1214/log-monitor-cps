@@ -1,34 +1,39 @@
 import type { PriorityCard } from "@/lib/types/priority-card"
 import JobCard from "./job-card"
 
+const dateNow = new Date()
 const lessPriorityCards: PriorityCard[] = [
   {
     cardTitle: "WM Sync",
     fetching: "Daily",
     fetchingBGColor: "#FFFFFF",
     color: "#60a5fa",
-    lastRun: null,
+    lastRun: dateNow,
+    fileSize: "File Size: " + "22",
   },
   {
     cardTitle: "WM Compare",
     fetching: "Daily",
     fetchingBGColor: "#FFFFFF",
     color: "#60a5fa",
-    lastRun: null,
+    lastRun: dateNow,
+    fileSize: "File Size: " + "22",
   },
   {
     cardTitle: "IM Header",
     fetching: "Recursive",
     fetchingBGColor: "#FFFFFF",
     color: "#f97316",
-    lastRun: null,
+    lastRun: dateNow,
+    fileSize: "File Size: " + "22",
   },
   {
     cardTitle: "IM Detail",
     fetching: "Recursive",
     fetchingBGColor: "#FFFFFF",
     color: "#22c55e",
-    lastRun: null,
+    lastRun: dateNow,
+    fileSize: "File Size: " + "22",
   },
 ]
 
