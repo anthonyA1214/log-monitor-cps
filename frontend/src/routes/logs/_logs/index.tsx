@@ -1,12 +1,12 @@
 import { ContentLayout } from "@/components/admin-panel/content-layout"
-import { columns } from "@/components/columns"
-import { DataTable } from "@/components/data-table"
+import { DataTable } from "./-logs-data-table"
 import EditLogDialog from "@/components/edit-log-dialog"
 import { useMilitaryTime } from "@/hooks/use-military-time"
 import { logsQueryOptions, syncLogs } from "@/lib/api/logs"
 import { useLogsStore } from "@/store/logs-store"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
+import { columns } from "./-columns"
 
 export const Route = createFileRoute("/logs/_logs/")({
   loader: ({ context: { queryClient } }) => {
@@ -46,7 +46,7 @@ function LogsPage() {
           </div>
 
           <span className="text-sm text-muted-foreground">
-            View and monitor your application logs in real-time.
+            Browse, manage, and monitor log file entries.
           </span>
         </div>
 

@@ -4,17 +4,37 @@ import { type ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Link } from "@tanstack/react-router"
-import { Badge } from "./ui/badge"
 import type { Log } from "@/lib/schemas/logs"
 import { fileStatusColorMap, sourceColorMap } from "@/lib/color-map"
 import { useLogsStore } from "@/store/logs-store"
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
-import { Edit } from "lucide-react"
+import { Edit, Minus, Plus } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
 export const columns: ColumnDef<Log>[] = [
+  {
+    accessorKey: "expander",
+    header: () => null,
+    cell: ({ row }) => {
+      return row.getCanExpand() ? (
+        <button
+          onClick={row.getToggleExpandedHandler()}
+          className="flex justify-center"
+        >
+          {row.getIsExpanded() ? <Minus size={16} /> : <Plus size={16} />}
+        </button>
+      ) : (
+        ""
+      )
+    },
+  },
   {
     accessorKey: "title",
     header: "Title",
@@ -52,27 +72,33 @@ export const columns: ColumnDef<Log>[] = [
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: () => <span className="flex justify-center">Status</span>,
     cell: ({ row }) => {
       const status = row.original.status
 
       return (
-        <Badge className={cn("text-sm capitalize", fileStatusColorMap[status])}>
-          {status}
-        </Badge>
+        <div className="flex justify-center">
+          <Badge
+            className={cn("text-sm capitalize", fileStatusColorMap[status])}
+          >
+            {status}
+          </Badge>
+        </div>
       )
     },
   },
   {
     accessorKey: "source",
-    header: "Source",
+    header: () => <span className="flex justify-center">Source</span>,
     cell: ({ row }) => {
       const source = row.original.source
 
       return (
-        <Badge className={cn("text-sm capitalize", sourceColorMap[source])}>
-          {source}
-        </Badge>
+        <div className="flex justify-center">
+          <Badge className={cn("text-sm capitalize", sourceColorMap[source])}>
+            {source}
+          </Badge>
+        </div>
       )
     },
   },
