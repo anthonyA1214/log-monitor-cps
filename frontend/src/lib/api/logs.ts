@@ -1,6 +1,6 @@
 import { env } from "@/env"
-import { queryOptions } from "@tanstack/react-query"
-import type { AddLogs, Log, LogInfo } from "../schemas/logs"
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query"
+import type { AddLogs, Log, LogContent, LogInfo } from "../schemas/logs"
 
 type LogDTO = {
   id: string
@@ -20,6 +20,13 @@ type LogInfoDTO = {
   file_modified_at: string
   source: "sync" | "manual"
   status: "active" | "inactive"
+}
+
+type LogContentDTO = {
+  content: string;
+  offset: number;
+  next_offset: number;
+  has_more: boolean;
 }
 
 async function syncLogs(): Promise<void> {
@@ -70,6 +77,26 @@ async function fetchLogInfo(logId: string): Promise<LogInfo> {
     fileModifiedAt: data.file_modified_at,
     source: data.source,
     status: data.status,
+  }
+}
+
+async function fetchLogContent(logId: string, offset?: number): Promise<LogContent> {
+  const url = new URL(`${env.VITE_API_URL}/api/logs/${logId}/content`)
+  if (offset !== undefined) {
+    url.searchParams.set("offset", String(offset))
+  }
+
+  const res = await fetch(url.toString())
+  if (!res.ok) {
+    throw new Error(`Failed to fetch log content for ${logId}`);
+  }
+
+  const data: LogContentDTO = await res.json()
+  return {
+    content: data.content,
+    offset: data.offset,
+    nextOffset: data.next_offset,
+    hasMore: data.has_more,
   }
 }
 
@@ -157,6 +184,18 @@ export const logsQueryOptions = {
     queryOptions({
       queryKey: ["logs", logId],
       queryFn: () => fetchLogInfo(logId),
+    }),
+
+  content: (logId: string) =>
+    infiniteQueryOptions({
+      queryKey: ["logs", logId, "content"],
+      queryFn: ({ pageParam }: { pageParam: number | undefined }) =>
+        fetchLogContent(logId, pageParam),
+      initialPageParam: undefined as number | undefined,
+      getNextPageParam: (last) =>
+        last.hasMore ? last.nextOffset : undefined,
+      getPreviousPageParam: (first) =>
+        first.offset > 0 ? Math.max(0, first.offset - 10 * 1024 * 1024) : undefined,
     }),
 }
 

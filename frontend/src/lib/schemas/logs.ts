@@ -20,6 +20,13 @@ export const logInfoSchema = logSchema
     filePath: z.string(),
   })
 
+export const logContentSchema = z.object({
+  content: z.string(),
+  offset: z.number(),
+  nextOffset: z.number(),
+  hasMore: z.boolean(),
+})
+
 export const addLogSchema = logInfoSchema
   .pick({
     title: true,
@@ -56,5 +63,6 @@ export const updateLogInfoSchema = logInfoSchema
 
 export type Log = z.infer<typeof logSchema>
 export type LogInfo = z.infer<typeof logInfoSchema>
+export type LogContent = z.infer<typeof logContentSchema>
 export type UpdateLogInfo = z.infer<typeof updateLogInfoSchema>
 export type AddLogs = z.infer<typeof addLogsSchema>

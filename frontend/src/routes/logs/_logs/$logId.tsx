@@ -3,15 +3,17 @@ import { logsQueryOptions } from "@/lib/api/logs"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { fileStatusColorMap, sourceColorMap } from "@/lib/color-map"
+import { useEffect, useRef } from "react"
 
 export const Route = createFileRoute("/logs/_logs/$logId")({
   loader: async ({ context: { queryClient }, params: { logId } }) => {
     const data = await queryClient.ensureQueryData(logsQueryOptions.info(logId))
+    await queryClient.ensureInfiniteQueryData(logsQueryOptions.content(logId))
     return { crumb: data.fileName }
   },
   component: LogsInfoPage,
@@ -20,8 +22,23 @@ export const Route = createFileRoute("/logs/_logs/$logId")({
 function LogsInfoPage() {
   const logId = Route.useParams().logId
   const { data } = useSuspenseQuery(logsQueryOptions.info(logId))
+  const {
+    data: logContent,
+    fetchPreviousPage,
+    hasPreviousPage,
+    isFetchingPreviousPage,
+  } = useSuspenseInfiniteQuery(logsQueryOptions.content(logId))
 
   const date = new Date(data.fileModifiedAt)
+  const fullContent = logContent?.pages.map((p) => p.content).join("")
+
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (contentRef.current && fullContent) {
+      contentRef.current.scrollTop = contentRef.current.scrollHeight
+    }
+  }, [])
 
   return (
     <ContentLayout>
@@ -75,18 +92,23 @@ function LogsInfoPage() {
           </div>
 
           {/* Log content */}
-          <div className="scrollbar-thin flex-1 overflow-y-auto">
-            {/* {data.content ? ( */}
-            {/*   <pre className="h-full p-4 font-mono text-xs leading-5 break-all whitespace-pre-wrap text-foreground"> */}
-            {/*     {data.content} */}
-            {/*   </pre> */}
-            {/* ) : ( */}
-            {/*   <div className="flex h-full flex-col items-center justify-center gap-2 py-16 text-muted-foreground"> */}
-            {/*     <p className="text-sm">No content</p> */}
-            {/*   </div> */}
-            {/* )} */}
+          <div ref={contentRef} className="scrollbar-thin flex-1 overflow-y-auto">
+            {hasPreviousPage && (
+              <div className="flex justify-center border-b p-2" style={{ overflowAnchor: "none" }}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fetchPreviousPage()}
+                  disabled={isFetchingPreviousPage}
+                >
+                  {isFetchingPreviousPage ? "Loading..." : "Load previous"}
+                </Button>
+              </div>
+            )}
+            <pre className="h-full p-4 font-mono text-xs leading-5 break-all whitespace-pre-wrap text-foreground">
+              {fullContent}
+            </pre>
           </div>
-          {/*  */}
         </div>
       </div>
     </ContentLayout>

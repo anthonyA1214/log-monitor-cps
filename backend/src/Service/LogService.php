@@ -9,184 +9,187 @@ use LogMonitor\Backend\Repository\LogRepository;
 
 final class LogService
 {
-    public function __construct(
-        private Settings $settings,
-        private LogRepository $logRepository,
-        private \PDO $pdo,
-    ) {
+  public function __construct(
+    private Settings $settings,
+    private LogRepository $logRepository,
+    private \PDO $pdo,
+  ) {}
+
+  public function addLogFiles(array $logs): array
+  {
+    $createdLogs = [];
+
+    $this->pdo->beginTransaction();
+
+    try {
+      foreach ($logs as $log) {
+        $fileModifiedAt = \date('Y-m-d H:i:s', \filemtime($log['file_path']));
+
+        $createdLogs[] = $this->logRepository->insert(
+          $log['title'],
+          $log['file_name'],
+          $log['file_path'],
+          $fileModifiedAt,
+        );
+      }
+
+      $this->pdo->commit();
+    } catch (\Exception $e) {
+      $this->pdo->rollBack();
+
+      throw $e;
     }
 
-    public function addLogFiles(array $logs): array
-    {
-        $createdLogs = [];
+    return $createdLogs;
+  }
 
-        $this->pdo->beginTransaction();
+  public function syncLogs(): void
+  {
+    $logsDir      = $this->settings->get('logs_directory');
+    $commonPrefix = $this->settings->get('common_prefix') ?: [];
 
-        try {
-            foreach ($logs as $log) {
-                $fileModifiedAt = \date('Y-m-d H:i:s', \filemtime($log['file_path']));
+    $files       = \glob($logsDir . '/*.txt');
+    $activeFiles = [];
 
-                $createdLogs[] = $this->logRepository->insert(
-                    $log['title'],
-                    $log['file_name'],
-                    $log['file_path'],
-                    $fileModifiedAt,
-                );
-            }
+    foreach ($files as $file) {
+      $fileName = \basename($file);
 
-            $this->pdo->commit();
-        } catch (\Exception $e) {
-            $this->pdo->rollBack();
+      if (!self::isValidLogFile($fileName)) {
+        continue; // Skip files that don't match the expected pattern
+      }
 
-            throw $e;
+      if (!empty($commonPrefix)) {
+        $matched = false;
+
+        foreach ($commonPrefix as $prefix) {
+          if (\str_starts_with($fileName, $prefix)) {
+            $matched = true;
+
+            break;
+          }
         }
 
-        return $createdLogs;
+        if (!$matched) {
+          continue; // Skip files that don't match any prefix
+        }
+      }
+
+      $filePath       = \realpath($file);
+      $fileModifiedAt = \date('Y-m-d H:i:s', \filemtime($file));
+
+      $this->logRepository->upsert($fileName, $filePath, $fileModifiedAt);
+      $activeFiles[] = $filePath;
     }
 
-    public function syncLogs(): void
-    {
-        $logsDir      = $this->settings->get('logs_directory');
-        $commonPrefix = $this->settings->get('common_prefix') ?: [];
+    $this->logRepository->markInactive($activeFiles);
+    $this->logRepository->deactivateOldLogs();
+  }
 
-        $files       = \glob($logsDir . '/*.txt');
-        $activeFiles = [];
+  public function getLogFiles(): array
+  {
+    $logs   = $this->logRepository->findCurrentLogs();
+    $result = [];
 
-        foreach ($files as $file) {
-            $fileName = \basename($file);
+    foreach ($logs as $log) {
+      $filePath = $log['file_path'];
 
-            if (!self::isValidLogFile($fileName)) {
-                continue; // Skip files that don't match the expected pattern
-            }
+      if (!\file_exists($filePath)) {
+        $this->logRepository->markInactiveById((int) $log['id']);
 
-            if (!empty($commonPrefix)) {
-                $matched = false;
+        continue; // Skip files that no longer exist
+      }
 
-                foreach ($commonPrefix as $prefix) {
-                    if (\str_starts_with($fileName, $prefix)) {
-                        $matched = true;
+      $fileModifiedAt = \date('Y-m-d H:i:s', \filemtime($filePath));
 
-                        break;
-                    }
-                }
+      if ($fileModifiedAt !== $log['file_modified_at']) {
+        $this->logRepository->updateModifiedAt((int) $log['id'], $fileModifiedAt);
+      }
 
-                if (!$matched) {
-                    continue; // Skip files that don't match any prefix
-                }
-            }
-
-            $filePath       = \realpath($file);
-            $fileModifiedAt = \date('Y-m-d H:i:s', \filemtime($file));
-
-            $this->logRepository->upsert($fileName, $filePath, $fileModifiedAt);
-            $activeFiles[] = $filePath;
-        }
-
-        $this->logRepository->markInactive($activeFiles);
-        $this->logRepository->deactivateOldLogs();
+      $result[] = $log;
     }
 
-    public function getLogFiles(): array
-    {
-        $logs   = $this->logRepository->findCurrentLogs();
-        $result = [];
+    return $result;
+  }
 
-        foreach ($logs as $log) {
-            $filePath = $log['file_path'];
+  public function getLogInfo(string $logId): ?array
+  {
+    $log = $this->logRepository->findById((int) $logId);
 
-            if (!\file_exists($filePath)) {
-                $this->logRepository->markInactiveById((int) $log['id']);
-
-                continue; // Skip files that no longer exist
-            }
-
-            $fileModifiedAt = \date('Y-m-d H:i:s', \filemtime($filePath));
-
-            if ($fileModifiedAt !== $log['file_modified_at']) {
-                $this->logRepository->updateModifiedAt((int) $log['id'], $fileModifiedAt);
-            }
-
-            $result[] = $log;
-        }
-
-        return $result;
+    if (!$log) {
+      return null;
     }
 
-    public function getLogInfo(string $logId): ?array
-    {
-        $log = $this->logRepository->findById((int) $logId);
+    $filePath = $log['file_path'];
 
-        if (!$log) {
-            return null;
-        }
-
-        $filePath = $log['file_path'];
-
-        if (!\file_exists($filePath)) {
-            return null;
-        }
-
-        return [
-            'id'               => $log['id'],
-            'title'            => $log['title'],
-            'file_name'        => $log['file_name'],
-            'file_path'        => $log['file_path'],
-            'file_modified_at' => \date('c', \filemtime($filePath)),
-            'source'           => $log['source'],
-            'status'           => $log['status'],
-        ];
+    if (!\file_exists($filePath)) {
+      return null;
     }
 
-    public function getLogContent(string $logId): ?array
-    {
-        $log = $this->logRepository->findById((int) $logId);
+    return [
+      'id'               => $log['id'],
+      'title'            => $log['title'],
+      'file_name'        => $log['file_name'],
+      'file_path'        => $log['file_path'],
+      'file_modified_at' => \date('c', \filemtime($filePath)),
+      'source'           => $log['source'],
+      'status'           => $log['status'],
+    ];
+  }
 
-        if (!$log) {
-            return null;
-        }
-
-        $filePath = $log['file_path'];
-
-        if (!\file_exists($filePath)) {
-            return null;
-        }
-
-        $fileSize = \filesize($filePath);
-        $offset   = \max(0, $fileSize - CHUNK_SIZE);
-
-        $handle = \fopen($filePath, 'rb');
-
-        if (!$handle) {
-            return null;
-        }
-
-        \fseek($handle, $offset);
-        $content = \fread($handle, CHUNK_SIZE);
-        \fclose($handle);
-
-        return [
-            'content'     => $content,
-            'next_offset' => 0 < $offset ? $offset : null,
-            'has_more'    => 0 < $offset,
-        ];
+  public function getLogContent(string $logId, ?int $offset = null): ?array
+  {
+    $log = $this->logRepository->findById((int) $logId);
+    if (!$log) {
+      return null;
     }
 
-    public function updateLogInfo(string $logId, array $data): ?array
-    {
-        // Implementation for updating log info (e.g., title) by log ID
-        $log = $this->logRepository->findById((int) $logId);
-
-        if (!$log) {
-            return null;
-        }
-
-        $this->logRepository->updateLogInfo((int) $logId, $data);
-
-        return $this->getLogInfo($logId);
+    $filePath = $log['file_path'];
+    if (!\file_exists($filePath)) {
+      return null;
     }
 
-    private static function isValidLogFile(string $fileName): bool
-    {
-        return (bool) \preg_match('/^.+_\d{8}\.txt$/', $fileName);
+    $fileSize = \filesize($filePath);
+    $chunkSize = CHUNK_SIZE * 10; // Define your chunk size here
+
+    if ($offset === null) {
+      $offset = max(0, $fileSize - $chunkSize);
     }
+
+    $offset = max(0, min($offset, $fileSize));
+
+    $fp = \fopen($filePath, 'rb');
+    if (!$fp) {
+      return null;
+    }
+
+    \fseek($fp, $offset);
+    $content = \fread($fp, $chunkSize);
+    \fclose($fp);
+
+    return [
+      'content' => $content,
+      'offset'  => $offset,
+      'next_offset' => min($offset + $chunkSize, $fileSize),
+      'has_more' => ($offset + $chunkSize) < $fileSize,
+    ];
+  }
+
+  public function updateLogInfo(string $logId, array $data): ?array
+  {
+    // Implementation for updating log info (e.g., title) by log ID
+    $log = $this->logRepository->findById((int) $logId);
+
+    if (!$log) {
+      return null;
+    }
+
+    $this->logRepository->updateLogInfo((int) $logId, $data);
+
+    return $this->getLogInfo($logId);
+  }
+
+  private static function isValidLogFile(string $fileName): bool
+  {
+    return (bool) \preg_match('/^.+_\d{8}\.txt$/', $fileName);
+  }
 }
